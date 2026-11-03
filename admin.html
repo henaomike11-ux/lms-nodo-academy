@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de administración · Nodo Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <div id="header"></div>
+  <section class="seccion" style="padding-top:28px">
+    <div class="contenedor">
+      <h1 style="font-size:1.8rem">Panel de administración</h1>
+      <div class="pestanas" id="pestanas">
+        <button class="pestana activa" data-tab="reportes">Reportes</button>
+        <button class="pestana" data-tab="cursos">Cursos</button>
+        <button class="pestana" data-tab="lecciones">Lecciones</button>
+        <button class="pestana" data-tab="crm">CRM</button>
+        <button class="pestana" data-tab="inscripciones">Inscripciones</button>
+        <button class="pestana" data-tab="instructores">Instructores</button>
+        <button class="pestana" data-tab="recursos">Recursos</button>
+        <button class="pestana" data-tab="usuarios">Usuarios</button>
+      </div>
+      <div id="panel"><div class="cargando">Cargando…</div></div>
+    </div>
+  </section>
+  <div id="footer"></div>
+  <script src="js/datos.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>

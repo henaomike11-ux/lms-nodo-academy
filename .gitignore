@@ -1,0 +1,8 @@
+# Nunca subir claves ni archivos locales
+.env
+*.key
+*.pem
+service-account*.json
+.DS_Store
+Thumbs.db
+node_modules/

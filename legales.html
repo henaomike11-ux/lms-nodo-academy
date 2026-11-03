@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legales · Nodo Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <div id="header"></div>
+  <section class="seccion">
+    <div class="contenedor" style="max-width:800px">
+      <h1>Información legal</h1>
+      <p class="texto-suave">Última actualización: noviembre de 2026. Nodo Academy es un proyecto académico de emprendimiento; estos textos son una base que el equipo revisará con asesoría legal antes de operar comercialmente.</p>
+
+      <div class="tarjeta" id="datos">
+        <h2>Política de tratamiento de datos personales</h2>
+        <p>En cumplimiento de la <strong>Ley 1581 de 2012</strong> y el Decreto 1377 de 2013 (Colombia), Nodo Academy, como responsable del tratamiento, informa:</p>
+        <h3>Qué datos recogemos</h3>
+        <p>Nombre, correo electrónico, número de WhatsApp (opcional), curso de interés, historial de compras y avance en los cursos.</p>
+        <h3>Para qué los usamos</h3>
+        <ul>
+          <li>Crear y administrar tu cuenta de estudiante y darte acceso a los cursos comprados.</li>
+          <li>Procesar pagos a través de la pasarela de pago y emitir certificados.</li>
+          <li>Enviarte información sobre cursos, novedades y promociones, cuando lo hayas autorizado.</li>
+          <li>Hacer seguimiento comercial a las personas que solicitan información.</li>
+        </ul>
+        <h3>Tus derechos</h3>
+        <p>Puedes conocer, actualizar, rectificar y suprimir tus datos, y revocar la autorización, escribiendo a <a href="mailto:hola@nodoacademy.co">hola@nodoacademy.co</a>. Responderemos en los plazos que establece la ley.</p>
+        <h3>Dónde se guardan</h3>
+        <p>Los datos se almacenan en servicios de Google (Firebase) con medidas de seguridad técnicas. Los datos de pago los procesa directamente la pasarela de pago; Nodo Academy no almacena números de tarjeta.</p>
+      </div>
+
+      <div class="tarjeta" id="terminos" style="margin-top:20px">
+        <h2>Términos y condiciones</h2>
+        <ol>
+          <li><strong>Servicio.</strong> Nodo Academy ofrece cursos en línea grabados. Al comprar un curso obtienes una licencia personal, intransferible y de duración indefinida para verlo en la plataforma.</li>
+          <li><strong>Cuenta.</strong> Eres responsable de mantener la confidencialidad de tu contraseña. No compartas tu cuenta.</li>
+          <li><strong>Pagos.</strong> Los precios están en pesos colombianos (COP) e incluyen los impuestos aplicables. El acceso se activa cuando la pasarela confirma el pago.</li>
+          <li><strong>Propiedad intelectual.</strong> Los videos, textos y materiales son propiedad de Nodo Academy o de sus instructores. No está permitido copiarlos, redistribuirlos ni revenderlos.</li>
+          <li><strong>Certificado.</strong> Se emite al completar el 100 % de las lecciones. Certifica la finalización del curso, no una titulación oficial.</li>
+          <li><strong>Cambios.</strong> Podemos actualizar el contenido y estos términos; avisaremos los cambios relevantes por correo.</li>
+        </ol>
+      </div>
+
+      <div class="tarjeta" id="reembolso" style="margin-top:20px">
+        <h2>Política de reembolso</h2>
+        <p>Puedes solicitar el reembolso total de un curso dentro de los <strong>7 días calendario</strong> siguientes a la compra, siempre que no hayas completado más del 20 % de sus lecciones. Escríbenos a <a href="mailto:hola@nodoacademy.co">hola@nodoacademy.co</a> con el correo de tu cuenta y el nombre del curso. El dinero se devuelve por el mismo medio de pago en un plazo de hasta 15 días hábiles, según los tiempos de la pasarela.</p>
+      </div>
+    </div>
+  </section>
+  <div id="footer"></div>
+  <script src="js/datos.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script type="module">import { iniciarPagina } from "./js/app.js"; iniciarPagina();</script>
+</body>
+</html>

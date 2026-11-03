@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nodo Academy · Cursos de tecnología y desarrollo web para principiantes</title>
+  <meta name="description" content="Aprende desarrollo web y herramientas de programación desde cero, con acceso de por vida y certificado de finalización.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <div id="header"></div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="contenedor hero-grid">
+      <div>
+        <span class="etiqueta">Cursos en línea · Acceso de por vida</span>
+        <h1>Aprende a crear tecnología, aunque hoy no sepas programar</h1>
+        <p class="lead">Nodo Academy enseña desarrollo web y herramientas de programación desde cero, con lecciones cortas, práctica real y certificado de finalización.</p>
+        <div class="hero-acciones">
+          <a class="btn btn-primario" href="cursos.html">Ver los cursos</a>
+          <a class="btn btn-contorno" href="#contacto">Quiero más información</a>
+        </div>
+      </div>
+      <div class="hero-tarjeta">
+        <h3>Lo que te llevas</h3>
+        <ul>
+          <li><span class="check">✓</span><span>Lecciones en video paso a paso, pensadas para principiantes</span></li>
+          <li><span class="check">✓</span><span>Acceso de por vida: aprende a tu ritmo y vuelve cuando quieras</span></li>
+          <li><span class="check">✓</span><span>Certificado de finalización al completar el curso</span></li>
+          <li><span class="check">✓</span><span>Pago seguro en línea y acceso inmediato</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- BENEFICIOS -->
+  <section class="seccion seccion-alt" id="beneficios">
+    <div class="contenedor">
+      <div class="titulo-seccion">
+        <h2>Hecho para quienes empiezan</h2>
+        <p class="texto-suave">Sin jerga innecesaria, sin requisitos previos. Cada lección te deja algo funcionando.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="tarjeta"><div class="icono">🧭</div><h3>Desde cero, en orden</h3><p class="texto-suave">Los cursos siguen una ruta clara: primero entiendes, luego practicas, después publicas.</p></div>
+        <div class="tarjeta"><div class="icono">🛠️</div><h3>Práctica real</h3><p class="texto-suave">Construyes proyectos de verdad que puedes mostrar: tu propia página web, tu repositorio en GitHub.</p></div>
+        <div class="tarjeta"><div class="icono">🎓</div><h3>Certificado</h3><p class="texto-suave">Al terminar el 100 % de las lecciones recibes un certificado de finalización para tu hoja de vida.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CURSOS DESTACADOS -->
+  <section class="seccion" id="cursos">
+    <div class="contenedor">
+      <div class="titulo-seccion">
+        <h2>Cursos destacados</h2>
+        <p class="texto-suave">Empieza por el que más te llame la atención. Ambos están pensados para principiantes.</p>
+      </div>
+      <div class="grid grid-2" id="cursos-destacados"><div class="cargando">Cargando cursos…</div></div>
+      <p class="centrado" style="margin-top:28px"><a class="btn btn-contorno" href="cursos.html">Ver todo el catálogo</a></p>
+    </div>
+  </section>
+
+  <!-- CÓMO FUNCIONA -->
+  <section class="seccion seccion-alt" id="como-funciona">
+    <div class="contenedor">
+      <div class="titulo-seccion"><h2>Cómo funciona</h2></div>
+      <div class="grid grid-3 pasos">
+        <div class="paso"><h3>Elige tu curso</h3><p class="texto-suave">Revisa el temario, el instructor y el precio en el catálogo.</p></div>
+        <div class="paso"><h3>Paga en línea</h3><p class="texto-suave">Con tarjeta o PSE a través de nuestra pasarela de pago segura.</p></div>
+        <div class="paso"><h3>Entra al aula</h3><p class="texto-suave">El curso se activa al instante. Marca tu avance lección a lección.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUIÉNES SOMOS -->
+  <section class="seccion" id="nosotros">
+    <div class="contenedor">
+      <div class="grid grid-2" style="align-items:center">
+        <div>
+          <h2>Quiénes somos</h2>
+          <p class="texto-suave">Nodo Academy nace como un emprendimiento educativo colombiano con una idea simple: la tecnología se aprende haciendo. Diseñamos cursos cortos y prácticos para que cualquier persona pueda dar su primer paso en el desarrollo web.</p>
+          <p class="texto-suave">Equipo fundador: Mike Henao, Juan Oduber y Jose García.</p>
+        </div>
+        <div class="tarjeta">
+          <h3>Nuestros compromisos</h3>
+          <ul class="lista-check">
+            <li>Contenido actualizado y explicado en español sencillo</li>
+            <li>Respuesta a tus dudas por correo en menos de 48 horas</li>
+            <li>Reembolso dentro de los primeros 7 días si el curso no es para ti</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="seccion seccion-alt" id="faq">
+    <div class="contenedor" style="max-width:760px">
+      <div class="titulo-seccion"><h2>Preguntas frecuentes</h2></div>
+      <div class="faq" id="faq-lista"></div>
+    </div>
+  </section>
+
+  <!-- FORMULARIO DE INTERÉS (alimenta el CRM) -->
+  <section class="seccion" id="contacto">
+    <div class="contenedor" style="max-width:620px">
+      <div class="tarjeta">
+        <h2>Quiero más información</h2>
+        <p class="texto-suave">Déjanos tus datos y te contamos cuándo abre cada curso, descuentos y novedades.</p>
+        <form class="formulario" id="form-lead" novalidate>
+          <div class="campo">
+            <label for="lead-nombre">Nombre completo</label>
+            <input id="lead-nombre" name="name" type="text" required autocomplete="name" placeholder="Ej.: Ana Pérez">
+            <span class="error" data-error="name"></span>
+          </div>
+          <div class="campo">
+            <label for="lead-correo">Correo electrónico</label>
+            <input id="lead-correo" name="email" type="email" required autocomplete="email" placeholder="ana@correo.com">
+            <span class="error" data-error="email"></span>
+          </div>
+          <div class="campo">
+            <label for="lead-telefono">WhatsApp (opcional)</label>
+            <input id="lead-telefono" name="phone" type="tel" autocomplete="tel" placeholder="+57 300 000 0000">
+          </div>
+          <div class="campo">
+            <label for="lead-curso">Curso de interés</label>
+            <select id="lead-curso" name="courseInterest"><option value="">Aún no lo sé</option></select>
+          </div>
+          <label class="campo-check">
+            <input type="checkbox" name="consent" required>
+            <span>Autorizo a Nodo Academy el tratamiento de mis datos personales según la <a href="legales.html#datos" target="_blank">política de tratamiento de datos</a> (Ley 1581 de 2012).</span>
+          </label>
+          <span class="error" data-error="consent"></span>
+          <button class="btn btn-primario btn-bloque" type="submit">Enviar</button>
+          <div id="lead-mensaje"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer"></div>
+
+  <script src="js/datos.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script type="module" src="js/inicio.js"></script>
+</body>
+</html>

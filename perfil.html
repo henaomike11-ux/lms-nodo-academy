@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi perfil · Nodo Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <div id="header"></div>
+  <section class="seccion">
+    <div class="contenedor" style="max-width:720px">
+      <h1>Mi perfil</h1>
+      <div id="perfil"><div class="cargando">Cargando…</div></div>
+    </div>
+  </section>
+  <div id="footer"></div>
+  <script src="js/datos.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script type="module">
+    import { requerirSesion, $, escapar, formatoCOP, fechaCorta } from "./js/app.js";
+    import { misPagos, obtenerCurso } from "./js/db.js";
+    const u = await requerirSesion();
+    if (u) {
+      let pagos = [];
+      try { pagos = await misPagos(u.uid); } catch (e) { console.error(e); }
+      const filas = await Promise.all(pagos.map(async p => {
+        const c = await obtenerCurso(p.courseId);
+        return `<tr><td>${fechaCorta(p.date)}</td><td>${escapar(c?.title || p.courseId)}</td><td>${formatoCOP(p.amount)}</td><td><span class="chip ${p.status === "approved" ? "" : "chip-gris"}">${escapar(p.status)}</span></td></tr>`;
+      }));
+      $("#perfil").innerHTML = `
+        <div class="tarjeta" style="display:flex;gap:18px;align-items:center">
+          <div class="logo-marca" style="width:64px;height:64px;font-size:1.6rem">${escapar((u.name || u.email)[0].toUpperCase())}</div>
+          <div><h3 style="margin:0">${escapar(u.name || "")}</h3><div class="texto-suave">${escapar(u.email)}</div><span class="chip chip-gris">${u.role === "admin" ? "Administrador" : "Estudiante"}</span></div>
+        </div>
+        <h3 style="margin-top:28px">Historial de compras</h3>
+        ${filas.length ? `<div class="tabla-scroll"><table class="tabla"><thead><tr><th>Fecha</th><th>Curso</th><th>Valor</th><th>Estado</th></tr></thead><tbody>${filas.join("")}</tbody></table></div>` : '<div class="vacio">Todavía no tienes compras.</div>'}`;
+    }
+  </script>
+</body>
+</html>

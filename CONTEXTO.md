@@ -18,5 +18,5 @@
 - **Modelo de datos (Firestore):** `users`, `courses`, `lessons`, `enrollments` (id = `uid_courseId`), `progress` (id = `uid_lessonId`), `payments`, `leads`, `interactions`, `instructors`, `resources`. Ver sección 8 de la guía.
 - **Modo demo:** si `js/firebase-config.js` está vacío, `db.js` lee de `js/datos.js` y el login queda deshabilitado. Al pegar la configuración de Firebase, todo pasa a usar la base de datos sin cambiar las páginas.
 - **Ya funciona:** inicio, catálogo con filtro, detalle de curso, formulario de interés, páginas legales, estructura de login/aula/panel (activas con Firebase).
-- **Estamos trabajando en:** Sprint 2 — conectar Firebase (Authentication + Firestore) y cargar los cursos a la base de datos.
+- **Estamos trabajando en:** Sprint 2 — Firebase ya conectado (Auth correo+Google, Firestore con reglas). Falta: registrar el primer usuario, darle rol admin e importar los cursos desde el panel.
 - **Reglas para la IA:** responde en español; explica cada archivo que crees; no uses librerías ni frameworks sin preguntar; diseño celular primero con los colores de la marca; nunca pongas claves secretas en el código; entrega archivos completos, no fragmentos.

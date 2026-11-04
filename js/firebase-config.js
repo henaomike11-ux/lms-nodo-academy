@@ -12,12 +12,12 @@
    ============================================================ */
 
 window.FIREBASE_CONFIG = {
-  apiKey: "",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: ""
+  apiKey: "AIzaSyCw-0ZnO5sCnBmz0yKOa9kvuvEIwJE6vJA",
+  authDomain: "nodo-academy-bc8b2.firebaseapp.com",
+  projectId: "nodo-academy-bc8b2",
+  storageBucket: "nodo-academy-bc8b2.firebasestorage.app",
+  messagingSenderId: "150284357973",
+  appId: "1:150284357973:web:bfeddca76f632d1d2d5fdc"
 };
 
 // Sprint 4: URL de la aplicación web de Apps Script (termina en /exec)

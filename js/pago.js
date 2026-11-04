@@ -7,8 +7,22 @@ import { obtenerCurso, crearPago, estaInscrito } from "./db.js";
 const usuario = await requerirSesion();
 if (usuario) {
   const cont = $("#pago");
-  const estado = parametro("estado"); const courseId = parametro("curso");
+  let estado = parametro("estado"); const courseId = parametro("curso");
   const curso = courseId ? await obtenerCurso(courseId) : null;
+
+  // Regreso desde Wompi: llega ?estado=retorno&id=<transacción>. Preguntamos al backend,
+  // que consulta la transacción a Wompi y crea la inscripción si está aprobada.
+  if (estado === "retorno") {
+    const transactionId = parametro("id");
+    estado = "pendiente";
+    if (transactionId && window.APPS_SCRIPT_URL) {
+      try {
+        const r = await fetch(window.APPS_SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ accion: "estadoPago", transactionId }) }).then(x => x.json());
+        if (r.estado === "APPROVED") estado = "exito";
+        else if (r.estado === "DECLINED" || r.estado === "ERROR" || r.estado === "VOIDED") estado = "rechazado";
+      } catch (e) { console.warn("No se pudo consultar el estado del pago", e); }
+    }
+  }
 
   if (estado) {
     const vistas = {

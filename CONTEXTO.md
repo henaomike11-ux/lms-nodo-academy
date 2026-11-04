@@ -6,7 +6,7 @@
 - **Cursos:**
   - Desarrollo Web desde Cero — $149.000 COP — 3 módulos (HTML, CSS y diseño, JavaScript básico), 9 lecciones.
   - Git y GitHub para Equipos — $99.000 COP — 3 módulos (Introducción a Git, Trabajo con GitHub, Flujo Scrum con GitHub), 9 lecciones.
-- **Ruta tecnológica (Ruta A):** HTML, CSS y JavaScript puro (módulos ES, sin frameworks) + Firebase Authentication + Cloud Firestore + Google Apps Script (backend de pagos y correos) + pasarela de pago Mercado Pago (modo prueba).
+- **Ruta tecnológica (Ruta A):** HTML, CSS y JavaScript puro (módulos ES, sin frameworks) + Firebase Authentication + Cloud Firestore + Google Apps Script (backend de pagos y correos) + pasarela de pago Wompi (sandbox).
 - **Publicación:** GitHub Pages en https://henaomike11-ux.github.io/lms-nodo-academy/
 - **Marca:** primario `#3B4CCA` (azul índigo), secundario `#18C3B0` (turquesa), acento `#FFC83D` (amarillo), fondo `#F7F8FC`, texto `#1E2233`. Tipografías: Poppins (títulos) e Inter (texto). Tono: cercano y claro, en español, tuteo.
 - **Estructura de carpetas:**

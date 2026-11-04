@@ -68,7 +68,7 @@ if (!curso || !curso.published) {
             <li>Certificado de finalización</li>
             <li>Reembolso en los primeros 7 días</li>
           </ul>
-          <p class="texto-suave" style="font-size:.8rem;margin:0">¿Dudas? Escríbenos a hola@nodoacademy.co</p>
+          <p class="texto-suave" style="font-size:.8rem;margin:0">¿Dudas? Escríbenos por WhatsApp al <a href="https://wa.me/573146882183" target="_blank" rel="noopener">+57 314 688 2183</a> o a henaomike11@gmail.com</p>
         </div>
       </aside>
     </div>`;

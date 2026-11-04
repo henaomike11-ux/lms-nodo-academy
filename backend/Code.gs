@@ -1,48 +1,55 @@
 /**
  * ============================================================
  * Nodo Academy · Backend en Google Apps Script (Sprint 4)
+ * Pasarela de pago: WOMPI (Colombia) · Web Checkout
  * ------------------------------------------------------------
  * Qué hace:
- *  1. crearPago   → crea el cobro en la pasarela (Mercado Pago, Checkout Pro)
- *                   y devuelve el enlace de pago.
- *  2. Webhook     → recibe el aviso de la pasarela, CONSULTA el pago por su ID
- *                   y, solo si está aprobado, crea payments + enrollments en
- *                   Firestore y pasa el lead a "cliente".
- *  3. nuevoLead   → envía el correo de bienvenida (S4-10).
+ *  1. crearPago    → arma el enlace del Web Checkout de Wompi con la
+ *                    firma de integridad (se calcula aquí, nunca en el frontend)
+ *                    y devuelve la URL a la que se envía al estudiante.
+ *  2. Webhook      → recibe el evento transaction.updated de Wompi, verifica el
+ *                    checksum con el secreto de eventos, CONSULTA la transacción
+ *                    a Wompi por su id y, solo si está APPROVED, crea payments +
+ *                    enrollments en Firestore y pasa el lead a "cliente".
+ *  3. estadoPago   → cuando el estudiante vuelve del checkout (?id=...), la página
+ *                    pago.html pregunta aquí; el script consulta Wompi y procesa el
+ *                    pago igual que el webhook (plan B si el webhook falla).
+ *  4. nuevoLead    → envía el correo de bienvenida (S4-10).
  *
- * Configuración (Apps Script → ⚙ Configuración del proyecto → Propiedades del script):
- *   PASARELA_TOKEN     = Access Token de PRUEBA de Mercado Pago (nunca en el código ni en GitHub)
- *   FIREBASE_PROJECT   = id del proyecto de Firebase (ej. nodo-academy-xxxx)
- *   SITIO_URL          = https://usuario.github.io/lms-nodo-academy/
+ * Propiedades del script (⚙ Configuración del proyecto → Propiedades del script):
+ *   WOMPI_PUBLIC_KEY       = pub_test_... (sandbox) · pub_prod_... (producción)
+ *   WOMPI_PRIVATE_KEY      = prv_test_... · prv_prod_...
+ *   WOMPI_INTEGRITY_SECRET = test_integrity_... · prod_integrity_...
+ *   WOMPI_EVENTS_SECRET    = test_events_... · prod_events_...
+ *   WOMPI_ENV              = sandbox | production
+ *   FIREBASE_PROJECT       = nodo-academy-bc8b2
+ *   SITIO_URL              = https://henaomike11-ux.github.io/lms-nodo-academy/
  *
  * Para que el script escriba en Firestore: ⚙ Configuración del proyecto →
- * "Proyecto de Google Cloud Platform" → poner el número del proyecto de Firebase.
- * Así ScriptApp.getOAuthToken() tiene permiso de la cuenta dueña del proyecto
- * (ver appsscript.json: scopes "datastore").
+ * "Proyecto de Google Cloud Platform" → número del proyecto de Firebase (150284357973).
  *
  * Publicar: Implementar → Nueva implementación → Aplicación web →
- *   Ejecutar como: Yo · Acceso: Cualquier usuario → copiar la URL /exec
- *   en js/firebase-config.js (APPS_SCRIPT_URL) y en el panel de la pasarela (webhook).
+ *   Ejecutar como: Yo · Acceso: Cualquier usuario → copiar la URL /exec en
+ *   js/firebase-config.js (APPS_SCRIPT_URL) y en Wompi → Desarrolladores → URL de eventos.
  * ============================================================
  */
 
 const PROPS = PropertiesService.getScriptProperties();
 const cfg = (k) => PROPS.getProperty(k) || "";
+const WOMPI_API = () => (cfg("WOMPI_ENV") === "production" ? "https://production.wompi.co/v1" : "https://sandbox.wompi.co/v1");
 
-/* ---------- Punto de entrada: el frontend envía POST con Content-Type text/plain ---------- */
+/* ---------- Punto de entrada: el frontend y Wompi envían POST ---------- */
 function doPost(e) {
   try {
-    const cuerpo = JSON.parse(e.postData.contents || "{}");
-    const params = e.parameter || {};
+    const cuerpo = JSON.parse((e.postData && e.postData.contents) || "{}");
 
-    // Aviso (webhook) de Mercado Pago: viene como ?type=payment&data.id=123 o en el cuerpo
-    if (params.type === "payment" || cuerpo.type === "payment" || cuerpo.action === "payment.updated" || cuerpo.action === "payment.created") {
-      const pagoId = params["data.id"] || (cuerpo.data && cuerpo.data.id) || params.id;
-      return responder(procesarAvisoDePago(pagoId));
+    // Evento (webhook) de Wompi
+    if (cuerpo.event && cuerpo.data && cuerpo.data.transaction) {
+      return responder(procesarEventoWompi(cuerpo));
     }
-
     switch (cuerpo.accion) {
       case "crearPago": return responder(crearPago(cuerpo));
+      case "estadoPago": return responder(procesarTransaccion(cuerpo.transactionId));
       case "nuevoLead": return responder(enviarBienvenida(cuerpo));
       default: return responder({ ok: false, error: "Acción desconocida" });
     }
@@ -52,11 +59,9 @@ function doPost(e) {
   }
 }
 
-/* Mercado Pago a veces hace GET para validar la URL; también sirve para probar en el navegador */
-function doGet(e) {
-  const p = e.parameter || {};
-  if (p.type === "payment" && p["data.id"]) return responder(procesarAvisoDePago(p["data.id"]));
-  return responder({ ok: true, servicio: "Nodo Academy backend", hora: new Date().toISOString() });
+/* Para probar en el navegador que la aplicación web responde */
+function doGet() {
+  return responder({ ok: true, servicio: "Nodo Academy backend", pasarela: "Wompi", entorno: cfg("WOMPI_ENV") || "sandbox", hora: new Date().toISOString() });
 }
 
 function responder(obj) {
@@ -64,69 +69,89 @@ function responder(obj) {
 }
 
 /* ============================================================
-   1. CREAR PAGO (Checkout Pro de Mercado Pago)
+   1. CREAR PAGO (Web Checkout de Wompi)
    ============================================================ */
 function crearPago(d) {
   if (!d.userId || !d.courseId) return { ok: false, error: "Faltan userId o courseId" };
   const curso = fsLeer("courses", d.courseId);
   if (!curso || curso.published !== true) return { ok: false, error: "Curso no disponible" };
 
-  const sitio = cfg("SITIO_URL") || d.origen;
-  const referencia = d.userId + "|" + d.courseId; // external_reference: usuario + curso
-  const preferencia = {
-    items: [{ id: d.courseId, title: curso.title, quantity: 1, unit_price: Number(curso.price), currency_id: "COP", description: "Curso en línea · Nodo Academy" }],
-    payer: { email: d.email || "" },
-    external_reference: referencia,
-    back_urls: {
-      success: sitio + "pago.html?estado=exito&curso=" + encodeURIComponent(d.courseId),
-      pending: sitio + "pago.html?estado=pendiente&curso=" + encodeURIComponent(d.courseId),
-      failure: sitio + "pago.html?estado=rechazado&curso=" + encodeURIComponent(d.courseId)
-    },
-    auto_return: "approved",
-    notification_url: ScriptApp.getService().getUrl(),
-    statement_descriptor: "NODO ACADEMY"
-  };
-  const resp = UrlFetchApp.fetch("https://api.mercadopago.com/checkout/preferences", {
-    method: "post", contentType: "application/json",
-    headers: { Authorization: "Bearer " + cfg("PASARELA_TOKEN") },
-    payload: JSON.stringify(preferencia), muteHttpExceptions: true
+  const sitio = cfg("SITIO_URL") || d.origen || "";
+  const montoCentavos = Math.round(Number(curso.price) * 100);
+  const moneda = "COP";
+  // Referencia única y legible: usuario + curso + momento (Wompi exige que no se repita)
+  const referencia = d.userId + "__" + d.courseId + "__" + Date.now();
+  const firma = sha256(referencia + montoCentavos + moneda + cfg("WOMPI_INTEGRITY_SECRET"));
+
+  // Guardamos el intento de pago para poder relacionar la referencia después
+  fsEscribir("payments", referencia, {
+    paymentId: referencia, status: "PENDING", amount: Number(curso.price), userId: d.userId, courseId: d.courseId,
+    date: new Date().toISOString(), payerEmail: d.email || "", provider: "wompi"
   });
-  const datos = JSON.parse(resp.getContentText());
-  if (resp.getResponseCode() >= 300) return { ok: false, error: "Pasarela: " + (datos.message || resp.getContentText()) };
-  // En pruebas se usa sandbox_init_point; en producción init_point
-  return { ok: true, url: datos.sandbox_init_point || datos.init_point, preferenciaId: datos.id };
+
+  const params = {
+    "public-key": cfg("WOMPI_PUBLIC_KEY"),
+    "currency": moneda,
+    "amount-in-cents": String(montoCentavos),
+    "reference": referencia,
+    "signature:integrity": firma,
+    "redirect-url": sitio + "pago.html?estado=retorno&curso=" + encodeURIComponent(d.courseId),
+    "customer-data:email": d.email || ""
+  };
+  const query = Object.keys(params).filter(k => params[k] !== "").map(k => encodeURIComponent(k) + "=" + encodeURIComponent(params[k])).join("&");
+  return { ok: true, url: "https://checkout.wompi.co/p/?" + query, referencia: referencia };
 }
 
 /* ============================================================
-   2. WEBHOOK: verificar el pago y crear la inscripción
-   Nunca confiamos solo en el aviso: consultamos el pago a la pasarela.
+   2. WEBHOOK: verificar el checksum y procesar la transacción
    ============================================================ */
-function procesarAvisoDePago(pagoId) {
-  if (!pagoId) return { ok: false, error: "Sin id de pago" };
-  const resp = UrlFetchApp.fetch("https://api.mercadopago.com/v1/payments/" + pagoId, {
-    headers: { Authorization: "Bearer " + cfg("PASARELA_TOKEN") }, muteHttpExceptions: true
+function procesarEventoWompi(evento) {
+  if (evento.event !== "transaction.updated") return { ok: true, ignorado: evento.event };
+  // Verificación del checksum (docs.wompi.co → Eventos)
+  const props = (evento.signature && evento.signature.properties) || [];
+  let cadena = "";
+  props.forEach(function (ruta) {
+    cadena += String(ruta.split(".").reduce(function (o, k) { return o ? o[k] : ""; }, evento.data));
   });
-  if (resp.getResponseCode() >= 300) return { ok: false, error: "No se pudo consultar el pago " + pagoId };
-  const pago = JSON.parse(resp.getContentText());
-  const [userId, courseId] = String(pago.external_reference || "").split("|");
-  if (!userId || !courseId) return { ok: false, error: "Referencia inválida" };
+  cadena += String(evento.timestamp) + cfg("WOMPI_EVENTS_SECRET");
+  const esperado = sha256(cadena).toUpperCase();
+  const recibido = String((evento.signature && evento.signature.checksum) || "").toUpperCase();
+  if (!recibido || esperado !== recibido) {
+    console.error("Checksum inválido", { esperado: esperado, recibido: recibido });
+    return { ok: false, error: "Checksum inválido" };
+  }
+  // Nunca confiamos solo en el aviso: consultamos la transacción
+  return procesarTransaccion(evento.data.transaction.id);
+}
 
-  // Registro del pago (id predecible = id de la pasarela → no se duplica)
-  fsEscribir("payments", String(pago.id), {
-    paymentId: String(pago.id), status: pago.status, amount: Number(pago.transaction_amount),
-    userId: userId, courseId: courseId, date: new Date().toISOString(), payerEmail: (pago.payer && pago.payer.email) || ""
+/* Consulta la transacción en Wompi y, si está aprobada, crea la inscripción */
+function procesarTransaccion(transactionId) {
+  if (!transactionId) return { ok: false, error: "Sin id de transacción" };
+  const resp = UrlFetchApp.fetch(WOMPI_API() + "/transactions/" + encodeURIComponent(transactionId), {
+    headers: { Authorization: "Bearer " + cfg("WOMPI_PRIVATE_KEY") }, muteHttpExceptions: true
+  });
+  if (resp.getResponseCode() >= 300) return { ok: false, error: "No se pudo consultar la transacción " + transactionId + ": " + resp.getContentText() };
+  const tx = JSON.parse(resp.getContentText()).data;
+  const partes = String(tx.reference || "").split("__");
+  const userId = partes[0], courseId = partes[1];
+  if (!userId || !courseId) return { ok: false, error: "Referencia inválida: " + tx.reference };
+
+  // Actualizamos el registro del pago (id = referencia, así no se duplica)
+  fsEscribir("payments", tx.reference, {
+    paymentId: tx.reference, transactionId: tx.id, status: tx.status, amount: Number(tx.amount_in_cents) / 100,
+    userId: userId, courseId: courseId, date: new Date().toISOString(), payerEmail: tx.customer_email || "",
+    paymentMethod: tx.payment_method_type || "", provider: "wompi"
   });
 
-  if (pago.status !== "approved") return { ok: true, estado: pago.status, inscrito: false };
+  if (tx.status !== "APPROVED") return { ok: true, estado: tx.status, inscrito: false };
 
-  // Inscripción con id predecible usuario_curso (si llega dos veces el aviso, no se duplica)
+  // Inscripción con id predecible usuario_curso (si el evento llega dos veces, no se duplica)
   fsEscribir("enrollments", userId + "_" + courseId, {
-    userId: userId, courseId: courseId, status: "active", paymentId: String(pago.id),
-    amount: Number(pago.transaction_amount), createdAt: new Date().toISOString()
+    userId: userId, courseId: courseId, status: "active", paymentId: tx.reference,
+    amount: Number(tx.amount_in_cents) / 100, createdAt: new Date().toISOString()
   });
-  // CRM: el contacto pasa a "cliente" (S4-06)
-  pasarLeadACliente(userId, (pago.payer && pago.payer.email) || "");
-  return { ok: true, estado: "approved", inscrito: true };
+  pasarLeadACliente(userId, tx.customer_email || ""); // CRM: contacto → cliente (S4-06)
+  return { ok: true, estado: "APPROVED", inscrito: true };
 }
 
 function pasarLeadACliente(userId, correo) {
@@ -140,7 +165,6 @@ function pasarLeadACliente(userId, correo) {
     fsActualizar("leads", l.id, { stage: "cliente", userId: userId });
   });
   if (!Object.keys(vistos).length && email) {
-    // No había lead: lo creamos como cliente para que el CRM tenga el historial completo
     fsEscribir("leads", "auto_" + userId, { name: (usuario && usuario.name) || email, email: email, stage: "cliente", source: "compra-directa", consent: true, userId: userId, createdAt: new Date().toISOString() });
   }
 }
@@ -150,22 +174,28 @@ function pasarLeadACliente(userId, correo) {
    ============================================================ */
 function enviarBienvenida(d) {
   if (!d.email) return { ok: false, error: "Sin correo" };
-  const nombre = d.name || "";
   MailApp.sendEmail({
     to: d.email,
     subject: "¡Bienvenido/a a Nodo Academy! 🎓",
     htmlBody:
-      "<p>Hola " + nombre + ",</p>" +
+      "<p>Hola " + (d.name || "") + ",</p>" +
       "<p>Gracias por tu interés en nuestros cursos de tecnología para principiantes. Muy pronto te escribiremos con fechas, precios y descuentos.</p>" +
       "<p>Mientras tanto, mira el catálogo: <a href=\"" + cfg("SITIO_URL") + "cursos.html\">" + cfg("SITIO_URL") + "cursos.html</a></p>" +
+      "<p>¿Dudas? Escríbenos por WhatsApp al +57 314 688 2183 o a henaomike11@gmail.com.</p>" +
       "<p>— Equipo Nodo Academy</p>"
   });
   return { ok: true };
 }
 
 /* ============================================================
-   FIRESTORE REST (con el permiso de la cuenta dueña del proyecto)
+   UTILIDADES
    ============================================================ */
+function sha256(texto) {
+  const bytes = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, texto, Utilities.Charset.UTF_8);
+  return bytes.map(function (b) { return ("0" + ((b + 256) % 256).toString(16)).slice(-2); }).join("");
+}
+
+/* ---------- Firestore REST (con el permiso de la cuenta dueña del proyecto) ---------- */
 function fsBase() { return "https://firestore.googleapis.com/v1/projects/" + cfg("FIREBASE_PROJECT") + "/databases/(default)/documents/"; }
 function fsHeaders() { return { Authorization: "Bearer " + ScriptApp.getOAuthToken() }; }
 
@@ -197,8 +227,6 @@ function fsConsultar(coleccion, campo, valor) {
     const d = desdeFirestore(x.document.fields); d.id = x.document.name.split("/").pop(); return d;
   });
 }
-
-// Conversión entre JSON normal y el formato de la API REST de Firestore
 function aValor(v) {
   if (v === null || v === undefined) return { nullValue: null };
   if (typeof v === "boolean") return { booleanValue: v };
@@ -222,8 +250,8 @@ function deValor(v) {
 }
 function desdeFirestore(fields) { const o = {}; Object.keys(fields || {}).forEach(function (k) { o[k] = deValor(fields[k]); }); return o; }
 
-/* ---------- Prueba manual desde el editor: ejecutar y revisar "Registro de ejecución" ---------- */
+/* ---------- Prueba manual desde el editor (ejecutar y revisar el registro) ---------- */
 function probarConexion() {
-  console.log("Proyecto:", cfg("FIREBASE_PROJECT"));
-  console.log("Cursos publicados de ejemplo:", JSON.stringify(fsLeer("courses", "desarrollo-web-desde-cero")));
+  console.log("Proyecto Firebase:", cfg("FIREBASE_PROJECT"), "· Wompi:", cfg("WOMPI_ENV") || "sandbox", "· llave pública:", cfg("WOMPI_PUBLIC_KEY") ? "configurada" : "FALTA");
+  console.log("Curso de prueba:", JSON.stringify(fsLeer("courses", "desarrollo-web-desde-cero")));
 }

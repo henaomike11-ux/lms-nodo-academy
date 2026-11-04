@@ -12,7 +12,7 @@ Plataforma web donde **Nodo Academy** publica y vende cursos de tecnología para
 | Sitio público | Inicio, catálogo, detalle del curso, legales | ✅ Sprint 1 |
 | Usuarios | Registro, inicio de sesión (correo y Google), perfil | ✅ Sprint 2 |
 | Aula virtual (LMS) | Mis cursos, lección con video y avance, panel admin de cursos y lecciones | 🔧 Sprint 3 |
-| Pagos y paywall | Botón Comprar → Mercado Pago → webhook → inscripción automática | 🔧 Sprint 4 |
+| Pagos y paywall | Botón Comprar → Wompi → evento (webhook) → inscripción automática | 🔧 Sprint 4 |
 | CRM | Formulario de interés → contactos, embudo, notas de seguimiento | 🔧 Sprint 4 |
 | Recursos y reportes | Instructores, recursos y costos, ventas, conversión y margen | 🔧 Sprint 5 |
 
@@ -21,7 +21,7 @@ Plataforma web donde **Nodo Academy** publica y vende cursos de tecnología para
 - **Frontend:** HTML, CSS y JavaScript puro (módulos ES), publicado en GitHub Pages.
 - **Usuarios y datos:** Firebase Authentication + Cloud Firestore (plan Spark, gratis).
 - **Backend:** Google Apps Script (`/backend/Code.gs`): crea el cobro, recibe el webhook de la pasarela, escribe la inscripción y envía correos.
-- **Pasarela:** Mercado Pago en modo de prueba.
+- **Pasarela:** Wompi (Web Checkout) en sandbox.
 - **IA:** Claude como asistente de desarrollo (ver `docs/bitacora-ia.md`).
 
 ## Cómo correrlo

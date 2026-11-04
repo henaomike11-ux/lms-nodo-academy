@@ -16,6 +16,7 @@ Con tres integrantes, el Product Owner y el Scrum Master también desarrollan. T
 
 - Canal del equipo en Teams (curso E-Business).
 - WhatsApp del grupo para la reunión diaria rápida.
+- Contacto público del emprendimiento: henaomike11@gmail.com · WhatsApp +57 314 688 2183
 
 ## Reuniones
 
@@ -30,5 +31,5 @@ Con tres integrantes, el Product Owner y el Scrum Master también desarrollan. T
 
 - GitHub: `henaomike11-ux` (dueño del repositorio) · colaboradores: pendiente invitar a Juan, Jose y al profesor (usuario pendiente).
 - Google / Firebase: cuenta del equipo (pendiente de crear el proyecto en el Sprint 2).
-- Pasarela de pago: Mercado Pago, cuenta de desarrollador (Sprint 4).
+- Pasarela de pago: Wompi, cuenta de comercio con llaves de sandbox (Sprint 4).
 - Asistente de IA: Claude.

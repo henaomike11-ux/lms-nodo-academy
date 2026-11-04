@@ -9,7 +9,9 @@ import { usaFirebase, onUser, logout } from "./db.js";
 export const MARCA = {
   nombre: "Nodo Academy",
   lema: "Cursos de tecnología y desarrollo web para principiantes",
-  correo: "hola@nodoacademy.co",
+  correo: "henaomike11@gmail.com",
+  whatsapp: "+57 314 688 2183",
+  whatsappLink: "https://wa.me/573146882183",
   ciudad: "Colombia"
 };
 
@@ -88,7 +90,7 @@ export function renderFooter() {
         <div>
           <a class="logo" href="index.html" style="color:#fff"><span class="logo-marca">N</span>${MARCA.nombre}</a>
           <p style="margin-top:12px;max-width:380px">${MARCA.lema}. Acceso de por vida y certificado de finalización.</p>
-          <p>${MARCA.correo}</p>
+          <p><a href="mailto:${MARCA.correo}">${MARCA.correo}</a><br><a href="${MARCA.whatsappLink}" target="_blank" rel="noopener">WhatsApp ${MARCA.whatsapp}</a></p>
         </div>
         <div>
           <h4>Plataforma</h4>

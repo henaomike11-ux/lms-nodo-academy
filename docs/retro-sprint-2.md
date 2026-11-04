@@ -1,6 +1,6 @@
 # Acta de revisión y retrospectiva · Sprint 2 · Usuarios y datos
 
-**Fecha de la demo:** *(pendiente, clase de cierre del sprint)* · **Enlace:** https://henaomike11-ux.github.io/lms-nodo-academy/
+**Fecha de la demo:** por programar en clase · **Retrospectiva redactada:** 4 nov 2026 (propuesta de la IA a partir de lo ocurrido en el sprint; el equipo puede ajustarla) · **Enlace:** https://henaomike11-ux.github.io/lms-nodo-academy/
 
 ## Revisión (qué se demostró)
 
@@ -13,4 +13,4 @@
 
 | Mantener | Mejorar | Probar |
 |---|---|---|
-| *(por llenar en equipo)* | | |
+| El botón «Importar datos de ejemplo» del panel: cargar 2 cursos y 18 lecciones tomó un clic en vez de escribirlos a mano en la consola. | La caché del navegador nos hizo creer que un cambio no funcionaba (admin.js viejo): acordar recargar con Ctrl+Shift+R y versionar los scripts (`?v=`) al desplegar. | Pensar las reglas de seguridad **junto con** el modelo de datos: la regla «solo inscritos leen lecciones» obligó a crear el temario público (`syllabus`) a mitad del sprint. |

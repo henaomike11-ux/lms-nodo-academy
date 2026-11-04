@@ -1,6 +1,6 @@
 # Acta de revisión y retrospectiva · Sprint 4 · Pagos y CRM
 
-**Fecha de la demo:** *(pendiente)* · **Enlace:** https://henaomike11-ux.github.io/lms-nodo-academy/
+**Fecha de la demo:** por programar en clase · **Retrospectiva redactada:** 4 nov 2026 (propuesta de la IA a partir de lo ocurrido en el sprint; el equipo puede ajustarla) · **Enlace:** https://henaomike11-ux.github.io/lms-nodo-academy/
 
 ## Revisión (qué se demostró)
 
@@ -14,4 +14,4 @@
 
 | Mantener | Mejorar | Probar |
 |---|---|---|
-| *(por llenar en equipo)* | | |
+| Nunca confiar solo en el aviso de la pasarela: verificar el checksum y consultar la transacción antes de inscribir. Dio seguridad real con poco código. | Al pegar llaves a mano los secretos quedaron cruzados y la firma falló. Correr siempre `diagnosticarLlaves` (muestra prefijo y longitud, no el valor) justo después de configurar. | Pedirle a 2 personas ajenas al equipo que hagan una compra de prueba completa desde su celular y cronometrar cuánto tardan desde «Comprar» hasta ver la primera lección. |

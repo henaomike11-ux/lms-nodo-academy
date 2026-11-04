@@ -1,6 +1,6 @@
 # Acta de revisión y retrospectiva · Sprint 3 · Aula virtual
 
-**Fecha de la demo:** *(pendiente)* · **Enlace:** https://henaomike11-ux.github.io/lms-nodo-academy/
+**Fecha de la demo:** por programar en clase · **Retrospectiva redactada:** 4 nov 2026 (propuesta de la IA a partir de lo ocurrido en el sprint; el equipo puede ajustarla) · **Enlace:** https://henaomike11-ux.github.io/lms-nodo-academy/
 
 ## Revisión (qué se demostró)
 
@@ -15,4 +15,4 @@
 
 | Mantener | Mejorar | Probar |
 |---|---|---|
-| *(por llenar en equipo)* | | |
+| Ids predecibles (`uid_courseId`, `uid_lessonId`): evitaron duplicados en inscripciones y progreso sin lógica extra. | El contenido real (videos y materiales) llegó tarde: el aula funciona, pero las lecciones muestran «video en producción». Grabar contenido en paralelo al desarrollo, no después. | Que un integrante distinto al que construyó cada pantalla la pruebe en su celular antes de moverla a «Hecho» (definición de hecho). |

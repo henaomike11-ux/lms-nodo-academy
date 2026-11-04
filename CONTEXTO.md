@@ -17,6 +17,6 @@
   - `/docs` actas, inventario de cursos, bitácora de IA, mapa del sitio
 - **Modelo de datos (Firestore):** `users`, `courses`, `lessons`, `enrollments` (id = `uid_courseId`), `progress` (id = `uid_lessonId`), `payments`, `leads`, `interactions`, `instructors`, `resources`. Ver sección 8 de la guía.
 - **Modo demo:** si `js/firebase-config.js` está vacío, `db.js` lee de `js/datos.js` y el login queda deshabilitado. Al pegar la configuración de Firebase, todo pasa a usar la base de datos sin cambiar las páginas.
-- **Ya funciona:** inicio, catálogo con filtro, detalle de curso, formulario de interés, páginas legales, estructura de login/aula/panel (activas con Firebase).
-- **Estamos trabajando en:** Sprint 2 — Firebase ya conectado (Auth correo+Google, Firestore con reglas). Falta: registrar el primer usuario, darle rol admin e importar los cursos desde el panel.
+- **Ya funciona:** sitio público (inicio, catálogo, detalle, legales), registro e inicio de sesión (correo y Google), catálogo y detalle desde Firestore, formulario que crea leads, panel admin (cursos, lecciones, CRM, inscripciones, instructores, recursos, reportes, usuarios), aula con progreso. Cuenta admin: Mike Henao.
+- **Estamos trabajando en:** Sprint 3 — aula virtual: subir videos (YouTube no listado) y materiales (Drive) a cada lección desde el panel; probar con un estudiante real; reglas de lecciones ya activas.
 - **Reglas para la IA:** responde en español; explica cada archivo que crees; no uses librerías ni frameworks sin preguntar; diseño celular primero con los colores de la marca; nunca pongas claves secretas en el código; entrega archivos completos, no fragmentos.

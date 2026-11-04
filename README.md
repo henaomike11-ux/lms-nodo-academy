@@ -10,7 +10,7 @@ Plataforma web donde **Nodo Academy** publica y vende cursos de tecnología para
 | Módulo | Pantallas | Estado |
 |---|---|---|
 | Sitio público | Inicio, catálogo, detalle del curso, legales | ✅ Sprint 1 |
-| Usuarios | Registro, inicio de sesión (correo y Google), perfil | 🔧 Sprint 2 (activa con Firebase) |
+| Usuarios | Registro, inicio de sesión (correo y Google), perfil | ✅ Sprint 2 |
 | Aula virtual (LMS) | Mis cursos, lección con video y avance, panel admin de cursos y lecciones | 🔧 Sprint 3 |
 | Pagos y paywall | Botón Comprar → Mercado Pago → webhook → inscripción automática | 🔧 Sprint 4 |
 | CRM | Formulario de interés → contactos, embudo, notas de seguimiento | 🔧 Sprint 4 |

@@ -35,7 +35,7 @@
  */
 
 const PROPS = PropertiesService.getScriptProperties();
-const cfg = (k) => PROPS.getProperty(k) || "";
+const cfg = (k) => String(PROPS.getProperty(k) || "").trim(); // trim: evita espacios al pegar llaves
 const WOMPI_API = () => (cfg("WOMPI_ENV") === "production" ? "https://production.wompi.co/v1" : "https://sandbox.wompi.co/v1");
 
 /* ---------- Punto de entrada: el frontend y Wompi envían POST ---------- */
@@ -249,6 +249,22 @@ function deValor(v) {
   return null;
 }
 function desdeFirestore(fields) { const o = {}; Object.keys(fields || {}).forEach(function (k) { o[k] = deValor(fields[k]); }); return o; }
+
+/* ---------- Diagnóstico de llaves: muestra prefijo y longitud, nunca el valor ---------- */
+function diagnosticarLlaves() {
+  const esperado = { WOMPI_PUBLIC_KEY: "pub_", WOMPI_PRIVATE_KEY: "prv_", WOMPI_INTEGRITY_SECRET: "integrity_", WOMPI_EVENTS_SECRET: "events_" };
+  Object.keys(esperado).forEach(function (k) {
+    const crudo = String(PROPS.getProperty(k) || "");
+    const v = crudo.trim();
+    const entorno = v.indexOf("test") >= 0 ? "sandbox" : (v.indexOf("prod") >= 0 ? "PRODUCCIÓN" : "?");
+    console.log(k + ": " + (v ? "ok" : "VACÍA") + " · prefijo " + v.slice(0, 15) + "… · longitud " + v.length +
+      (crudo !== v ? " · ¡tenía espacios, se recortan automáticamente!" : "") +
+      (v && v.indexOf(esperado[k]) < 0 ? " · ¡NO parece una llave de tipo " + esperado[k] + "!" : "") + " · " + entorno);
+  });
+  // Firma de ejemplo para comparar con la documentación de Wompi
+  const ejemplo = sha256("sk8-438k4-xmxfx-5213" + "2490000" + "COP" + "prod_integrity_Z5mMke9x0k8gpErbDqwrJXMqsI6SFli6");
+  console.log("Prueba de SHA256 (debe ser 06d3e5454ea70a59bd0438fda25a370b5e697d9da051b6835e4b0328a9b56324): " + ejemplo);
+}
 
 /* ---------- Prueba manual desde el editor (ejecutar y revisar el registro) ---------- */
 function probarConexion() {

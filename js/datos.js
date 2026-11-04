@@ -19,7 +19,7 @@ window.DATOS = {
       price: 149000,
       currency: "COP",
       imageUrl: "",
-      instructorId: "instructor-1",
+      instructorId: "jose-garcia",
       published: true,
       featured: true,
       requirements: ["Un computador con internet", "Ganas de aprender; no necesitas saber programar"],
@@ -42,7 +42,7 @@ window.DATOS = {
       price: 99000,
       currency: "COP",
       imageUrl: "",
-      instructorId: "instructor-2",
+      instructorId: "juan-oduber",
       published: true,
       featured: true,
       requirements: ["Cuenta gratuita de GitHub", "Conocimientos básicos de computación"],
@@ -80,8 +80,9 @@ window.DATOS = {
   ],
 
   instructors: [
-    { id: "instructor-1", name: "Instructor por confirmar (ejemplo)", email: "", specialty: "Desarrollo web", hourlyRate: 0, bio: "Texto de ejemplo. El equipo reemplazará este perfil con el instructor real del curso." },
-    { id: "instructor-2", name: "Instructor por confirmar (ejemplo)", email: "", specialty: "Git y trabajo en equipo", hourlyRate: 0, bio: "Texto de ejemplo. El equipo reemplazará este perfil con el instructor real del curso." }
+    { id: "mike-henao", name: "Mike Henao", email: "henaomike11@gmail.com", specialty: "Desarrollo web y producto", hourlyRate: 0, bio: "Product Owner de Nodo Academy. Lidera el diseño de los cursos y la experiencia del estudiante." },
+    { id: "juan-oduber", name: "Juan Oduber", email: "", specialty: "Git, GitHub y trabajo en equipo", hourlyRate: 0, bio: "Scrum Master de Nodo Academy. Enseña a trabajar en equipo con control de versiones y tableros." },
+    { id: "jose-garcia", name: "Jose García", email: "", specialty: "HTML, CSS y JavaScript", hourlyRate: 0, bio: "Developer de Nodo Academy. Construye las pantallas y la lógica de la plataforma." }
   ],
 
   faq: [

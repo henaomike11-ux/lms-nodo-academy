@@ -7,7 +7,7 @@ Fuente: documento "Nodo Academy: Marca, cursos, identidad y equipo". Estos datos
 - **Promesa:** Publica tu primera página web profesional en 4 semanas.
 - **Público:** personas sin experiencia en programación que quieren crear su propio sitio web.
 - **Precio:** $149.000 COP · **Nivel:** principiante · **Duración:** 12 horas.
-- **Instructor:** por confirmar (en el sitio aparece como texto de ejemplo).
+- **Instructor:** Jose García (Developer del equipo).
 - **Materiales:** videos en YouTube (no listados), guías en PDF en Google Drive, plantillas de código.
 
 | Módulo | Lecciones |
@@ -21,7 +21,7 @@ Fuente: documento "Nodo Academy: Marca, cursos, identidad y equipo". Estos datos
 - **Promesa:** Trabaja en equipo sin pisar el código de nadie.
 - **Público:** estudiantes y equipos pequeños que empiezan a desarrollar software juntos.
 - **Precio:** $99.000 COP · **Nivel:** principiante · **Duración:** 8 horas.
-- **Instructor:** por confirmar.
+- **Instructor:** Juan Oduber (Scrum Master del equipo).
 - **Materiales:** videos en YouTube (no listados), repositorio de práctica, hoja de comandos en PDF.
 
 | Módulo | Lecciones |
@@ -33,5 +33,4 @@ Fuente: documento "Nodo Academy: Marca, cursos, identidad y equipo". Estos datos
 ## Pendientes de contenido (Sprint 3)
 
 - Grabar o conseguir los videos de cada lección y pegar los enlaces desde el panel de administración.
-- Confirmar nombre, correo y tarifa de cada instructor.
 - Subir materiales a Drive y pegar los enlaces en cada lección.

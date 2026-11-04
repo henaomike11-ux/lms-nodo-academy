@@ -21,4 +21,4 @@ window.FIREBASE_CONFIG = {
 };
 
 // Sprint 4: URL de la aplicación web de Apps Script (termina en /exec)
-window.APPS_SCRIPT_URL = "";
+window.APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw7QtkJNV0WAYKxIon7ereL5Jk_yHjVNK4oD1WGGXxk-67mJMxgteeTDjdfbDMWmOcu/exec";

@@ -11,8 +11,9 @@ if (!curso || !curso.published) {
   cont.innerHTML = '<div class="vacio"><h2>Curso no encontrado</h2><p>Puede que el enlace esté mal escrito o el curso ya no esté disponible.</p><a class="btn btn-primario" href="cursos.html">Ir al catálogo</a></div>';
 } else {
   document.title = `${curso.title} · Nodo Academy`;
+  // Temario: en Firestore viene copiado dentro del curso (syllabus); en modo demo se lee de datos.js
   const [lecciones, instructor, inscrito] = await Promise.all([
-    obtenerLecciones(curso.id),
+    usaFirebase ? Promise.resolve(curso.syllabus || []) : obtenerLecciones(curso.id),
     obtenerInstructor(curso.instructorId),
     usuario ? estaInscrito(usuario.uid, curso.id) : false
   ]);

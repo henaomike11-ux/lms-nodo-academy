@@ -126,10 +126,22 @@ export async function obtenerLeccion(id) {
 export async function guardarLeccion(id, datos) {
   const { db, F } = await firebase();
   await F.setDoc(F.doc(db, "lessons", id), datos, { merge: true });
+  await actualizarTemario(datos.courseId);
 }
 export async function eliminarLeccion(id) {
   const { db, F } = await firebase();
+  const snap = await F.getDoc(F.doc(db, "lessons", id));
+  const courseId = snap.exists() ? snap.data().courseId : null;
   await F.deleteDoc(F.doc(db, "lessons", id));
+  if (courseId) await actualizarTemario(courseId);
+}
+/** Temario público: copia solo los títulos de las lecciones dentro del curso para que
+ *  los visitantes vean el programa sin tener acceso al contenido (lessons es solo para inscritos). */
+export async function actualizarTemario(courseId) {
+  const { db, F } = await firebase();
+  const lecciones = await obtenerLecciones(courseId);
+  const syllabus = lecciones.map(l => ({ id: l.id, moduleNumber: l.moduleNumber, moduleName: l.moduleName, order: l.order, title: l.title }));
+  await F.setDoc(F.doc(db, "courses", courseId), { syllabus, lessonCount: syllabus.length }, { merge: true });
 }
 export async function obtenerInstructores() {
   if (!usaFirebase) return DATOS.instructors;

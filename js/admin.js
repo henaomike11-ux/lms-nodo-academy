@@ -113,6 +113,7 @@ if (usuario) {
         for (const i of DATOS.instructors) { const { id, ...r } = i; await db.guardarInstructor(id, r); }
         for (const c of DATOS.courses) { const { id, ...r } = c; await db.guardarCurso(id, r); }
         for (const l of DATOS.lessons) { const { id, ...r } = l; await db.guardarLeccion(id, r); }
+        for (const c of DATOS.courses) await db.actualizarTemario(c.id);
         toast("Datos de ejemplo importados"); cursos();
       });
     }

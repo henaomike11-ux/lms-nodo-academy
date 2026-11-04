@@ -291,6 +291,26 @@ export async function eliminarRecurso(id) {
 }
 
 /* ============================================================
+   SESIONES Y HORARIOS (Sprint 5 · S5-03)
+   sessions: { courseId, instructorId, title, dayOfWeek (1=lunes…7=domingo),
+               startTime "19:00", endTime "20:30", mode, link, notes }
+   ============================================================ */
+export async function obtenerSesiones() {
+  const { db, F } = await firebase();
+  const snap = await F.getDocs(F.collection(db, "sessions"));
+  return snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.dayOfWeek - b.dayOfWeek) || String(a.startTime).localeCompare(String(b.startTime)));
+}
+export async function guardarSesion(id, datos) {
+  const { db, F } = await firebase();
+  if (id) await F.setDoc(F.doc(db, "sessions", id), datos, { merge: true });
+  else await F.addDoc(F.collection(db, "sessions"), { ...datos, createdAt: F.serverTimestamp() });
+}
+export async function eliminarSesion(id) {
+  const { db, F } = await firebase();
+  await F.deleteDoc(F.doc(db, "sessions", id));
+}
+
+/* ============================================================
    PAGOS: crear el cobro en la pasarela a través de Apps Script
    ============================================================ */
 export async function crearPago(uid, courseId, correo) {

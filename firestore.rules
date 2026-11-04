@@ -79,5 +79,11 @@ service cloud.firestore {
     // ---------- interactions, resources: solo admin ----------
     match /interactions/{id} { allow read, write: if esAdmin(); }
     match /resources/{id} { allow read, write: if esAdmin(); }
+
+    // ---------- sessions (calendario de sesiones): público lee, solo admin escribe ----------
+    match /sessions/{id} {
+      allow read: if true;
+      allow write: if esAdmin();
+    }
   }
 }

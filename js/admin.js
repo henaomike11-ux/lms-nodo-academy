@@ -14,7 +14,7 @@ if (usuario) {
     $("#panel").innerHTML = '<div class="mensaje mensaje-aviso">El panel necesita Firebase (Sprint 2). Configura js/firebase-config.js.</div>';
   } else {
     const panel = $("#panel");
-    const vistas = { reportes, cursos, lecciones, crm, inscripciones, instructores, recursos, usuarios };
+    const vistas = { reportes, cursos, lecciones, crm, inscripciones, instructores, recursos, calendario, usuarios };
     $("#pestanas").addEventListener("click", (ev) => {
       const b = ev.target.closest(".pestana"); if (!b) return;
       $$(".pestana").forEach(p => p.classList.toggle("activa", p === b));
@@ -318,6 +318,57 @@ if (usuario) {
       });
       $$("[data-estado]").forEach(s => s.addEventListener("change", async () => { await db.guardarRecurso(s.dataset.estado, { status: s.value }); toast("Estado actualizado"); }));
       $$("[data-borrar]").forEach(b => b.addEventListener("click", async () => { if (confirm("¿Borrar el recurso?")) { await db.eliminarRecurso(b.dataset.borrar); recursos(); } }));
+    }
+
+    /* ================= CALENDARIO DE SESIONES (S5-03) ================= */
+    const DIAS = ["", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+    async function calendario() {
+      const [sesiones, cursosL, instr] = await Promise.all([db.obtenerSesiones(), db.obtenerCursos({ todos: true }), db.obtenerInstructores()]);
+      const nombreC = (id) => cursosL.find(c => c.id === id)?.title || id || "—";
+      const nombreI = (id) => instr.find(i => i.id === id)?.name || "Sin instructor";
+      const tarjeta = (s) => `
+        <div class="tarjeta-lead">
+          <strong>${escapar(s.startTime)}–${escapar(s.endTime)}</strong> · <span class="chip chip-gris">${escapar(s.mode || "en vivo")}</span><br>
+          ${escapar(s.title || nombreC(s.courseId))}<br>
+          <small class="texto-suave">${escapar(nombreC(s.courseId))} · ${escapar(nombreI(s.instructorId))}</small>
+          ${s.link ? `<br><a href="${escapar(s.link)}" target="_blank" rel="noopener">Enlace de la sesión ↗</a>` : ""}
+          <div class="fila-acciones" style="margin-top:6px"><button class="btn btn-contorno btn-pequeno" data-editar="${s.id}">Editar</button><button class="btn btn-contorno btn-pequeno" data-borrar="${s.id}">Borrar</button></div>
+        </div>`;
+      panel.innerHTML = `
+        <p class="texto-suave">Vista semanal de sesiones en vivo, asesorías y grabaciones. Cada sesión tiene curso, instructor, día y hora.</p>
+        <div class="fila-acciones" style="margin-bottom:14px"><button class="btn btn-primario btn-pequeno" id="nueva">+ Nueva sesión</button></div>
+        <div class="embudo" style="grid-template-columns:repeat(7, minmax(160px, 1fr))">
+          ${[1, 2, 3, 4, 5, 6, 7].map(d => `<div class="columna-embudo"><h4>${DIAS[d]} <span>${sesiones.filter(s => Number(s.dayOfWeek) === d).length}</span></h4>${sesiones.filter(s => Number(s.dayOfWeek) === d).map(tarjeta).join("") || '<p class="texto-suave" style="font-size:.8rem;margin:4px 6px">Sin sesiones</p>'}</div>`).join("")}
+        </div>
+        <div id="form-sesion"></div>`;
+      const formulario = (s = {}) => {
+        $("#form-sesion").innerHTML = `
+          <form class="tarjeta formulario" id="f" style="margin-top:20px">
+            <h3>${s.id ? "Editar sesión" : "Nueva sesión"}</h3>
+            <div class="grid grid-3">
+              <div class="campo"><label>Curso</label><select name="courseId" required>${opciones(cursosL, s.courseId)}</select></div>
+              <div class="campo"><label>Instructor</label><select name="instructorId"><option value="">—</option>${opciones(instr, s.instructorId)}</select></div>
+              <div class="campo"><label>Título (opcional)</label><input name="title" value="${escapar(s.title || "")}" placeholder="Ej.: Asesoría módulo 2"></div>
+              <div class="campo"><label>Día</label><select name="dayOfWeek">${[1, 2, 3, 4, 5, 6, 7].map(d => `<option value="${d}" ${Number(s.dayOfWeek) === d ? "selected" : ""}>${DIAS[d]}</option>`).join("")}</select></div>
+              <div class="campo"><label>Hora inicio</label><input name="startTime" type="time" required value="${escapar(s.startTime || "19:00")}"></div>
+              <div class="campo"><label>Hora fin</label><input name="endTime" type="time" required value="${escapar(s.endTime || "20:30")}"></div>
+              <div class="campo"><label>Modalidad</label><select name="mode">${["en vivo", "asesoría", "grabación", "presencial"].map(m => `<option ${s.mode === m ? "selected" : ""}>${m}</option>`).join("")}</select></div>
+              <div class="campo"><label>Enlace (Meet/Zoom)</label><input name="link" value="${escapar(s.link || "")}"></div>
+              <div class="campo"><label>Notas</label><input name="notes" value="${escapar(s.notes || "")}"></div>
+            </div>
+            <div class="fila-acciones"><button class="btn btn-primario" type="submit">Guardar</button><button class="btn btn-contorno" type="button" id="cancelar">Cancelar</button></div>
+          </form>`;
+        $("#cancelar").addEventListener("click", () => $("#form-sesion").innerHTML = "");
+        $("#f").addEventListener("submit", async (ev) => {
+          ev.preventDefault();
+          const d = Object.fromEntries(new FormData(ev.target).entries());
+          await db.guardarSesion(s.id || null, { ...d, dayOfWeek: Number(d.dayOfWeek) });
+          toast("Sesión guardada"); calendario();
+        });
+      };
+      $("#nueva").addEventListener("click", () => formulario());
+      $$("[data-editar]").forEach(b => b.addEventListener("click", () => formulario(sesiones.find(x => x.id === b.dataset.editar))));
+      $$("[data-borrar]").forEach(b => b.addEventListener("click", async () => { if (confirm("¿Borrar la sesión?")) { await db.eliminarSesion(b.dataset.borrar); calendario(); } }));
     }
 
     /* ================= USUARIOS (S2-09) ================= */

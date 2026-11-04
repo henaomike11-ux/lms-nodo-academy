@@ -1,6 +1,6 @@
 /* Nodo Academy · curso.js — detalle del curso: temario, instructor, precio y botón Comprar */
 import { iniciarPagina, $, escapar, formatoCOP, parametro, toast } from "./app.js";
-import { obtenerCurso, obtenerLecciones, obtenerInstructor, estaInscrito, usaFirebase } from "./db.js";
+import { obtenerCurso, obtenerLecciones, obtenerInstructor, estaInscrito, usaFirebase, obtenerSesiones } from "./db.js";
 
 const usuario = await iniciarPagina();
 const id = parametro("id");
@@ -74,4 +74,19 @@ if (!curso || !curso.published) {
     </div>`;
 
   $("#btn-comprar")?.addEventListener("click", () => toast("El pago en línea estará disponible en el Sprint 4."));
+
+  // Sesiones en vivo / asesorías programadas para este curso (calendario del panel)
+  if (usaFirebase) {
+    try {
+      const DIAS = ["", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+      const sesiones = (await obtenerSesiones()).filter(s => s.courseId === curso.id);
+      if (sesiones.length) {
+        $(".caja-compra").insertAdjacentHTML("beforeend", `
+          <h4 style="margin:18px 0 8px">Sesiones y asesorías</h4>
+          <ul class="texto-suave" style="padding-left:18px;margin:0;font-size:.9rem">
+            ${sesiones.map(s => `<li><strong>${DIAS[s.dayOfWeek] || ""}</strong> ${escapar(s.startTime)}–${escapar(s.endTime)} · ${escapar(s.title || s.mode || "en vivo")}</li>`).join("")}
+          </ul>`);
+      }
+    } catch (e) { console.warn("Sin sesiones", e); }
+  }
 }

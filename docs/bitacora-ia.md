@@ -23,4 +23,17 @@ Registro de los prompts clave de cada sprint: qué pedimos, con qué herramienta
 
 ## Sprint 3
 
+*(por llenar: videos y materiales de cada lección)*
+
+## Sprint 4
+
+| # | Fecha | Quién | Herramienta | Qué pedimos | Resultado | Correcciones |
+|---|---|---|---|---|---|---|
+| 10 | 2026-11-03 | Mike | Claude | Cambiar el backend de pagos a **Wompi** (Web Checkout) y actualizar el contacto del emprendimiento en el sitio | `backend/Code.gs` con firma de integridad, verificación del checksum de eventos, consulta de la transacción y plan B `estadoPago`; contacto y WhatsApp en footer, detalle y legales | Se consultó la documentación oficial de Wompi (eventos y checkout) antes de escribir el código |
+| 11 | 2026-11-03 | Mike | Claude | Publicar el backend en Apps Script y conectarlo con el sitio y con Wompi | Proyecto `nodo-academy-backend` con GCP de Firebase, manifiesto con permisos, app web `/exec`, URL de eventos configurada en Wompi sandbox | Los permisos OAuth y las 4 llaves de sandbox los puso Mike a mano: la IA no manipula credenciales |
+| 12 | 2026-11-03 | Mike | Claude | «El pago no pudo ser realizado: la firma es inválida» | Función `diagnosticarLlaves` (muestra solo prefijo y longitud): los secretos de integridad y eventos estaban intercambiados. Se intercambiaron dentro del script y se publicó la versión 2 | Lección: tras pegar llaves, correr siempre `diagnosticarLlaves` antes de probar |
+| 13 | 2026-11-03 | Mike | Claude | Compra de prueba de punta a punta | Tarjeta de prueba → evento de Wompi → pago APPROVED → inscripción creada sola → contacto en etapa *cliente* en el CRM | Ninguna |
+
+## Sprint 5
+
 *(por llenar)*

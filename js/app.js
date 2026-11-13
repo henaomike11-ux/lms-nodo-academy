@@ -15,6 +15,9 @@ export const MARCA = {
   ciudad: "Colombia"
 };
 
+/* Isotipo del logo: una N formada por líneas y nodos (red conectada) */
+const LOGO_N = '<svg width="26" height="26" viewBox="8 8 48 48" aria-hidden="true"><path d="M18 47V17L46 47V17" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><g fill="#fff"><circle cx="18" cy="47" r="6.5"/><circle cx="18" cy="17" r="6.5"/><circle cx="46" cy="47" r="6.5"/><circle cx="46" cy="17" r="6.5"/></g></svg>';
+
 /* ---------- Utilidades ---------- */
 export const $ = (sel, raiz = document) => raiz.querySelector(sel);
 export const $$ = (sel, raiz = document) => [...raiz.querySelectorAll(sel)];
@@ -68,7 +71,7 @@ export function renderHeader(usuario) {
   cont.innerHTML = `
     <header class="header">
       <div class="contenedor">
-        <a class="logo" href="index.html"><span class="logo-marca">N</span>${MARCA.nombre}</a>
+        <a class="logo" href="index.html"><span class="logo-marca">${LOGO_N}</span>${MARCA.nombre}</a>
         <button class="btn-menu" id="btn-menu" aria-label="Abrir menú" aria-expanded="false">☰</button>
         <nav class="nav" id="nav">${enlacesPublicos}${enlacesSesion}</nav>
       </div>
@@ -88,7 +91,7 @@ export function renderFooter() {
     <footer class="footer">
       <div class="contenedor footer-grid">
         <div>
-          <a class="logo" href="index.html" style="color:#fff"><span class="logo-marca">N</span>${MARCA.nombre}</a>
+          <a class="logo" href="index.html" style="color:#fff"><span class="logo-marca">${LOGO_N}</span>${MARCA.nombre}</a>
           <p style="margin-top:12px;max-width:380px">${MARCA.lema}. Acceso de por vida y certificado de finalización.</p>
           <p><a href="mailto:${MARCA.correo}">${MARCA.correo}</a><br><a href="${MARCA.whatsappLink}" target="_blank" rel="noopener">WhatsApp ${MARCA.whatsapp}</a></p>
         </div>

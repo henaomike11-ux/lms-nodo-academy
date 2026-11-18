@@ -57,12 +57,59 @@ if (usuario) {
           <div class="kpi"><div class="valor">${leads.length}</div><div class="nombre">Contactos en el CRM</div></div>
           <div class="kpi"><div class="valor">${conversion} %</div><div class="nombre">Conversión (clientes ÷ contactos)</div></div>
         </div>
+        <h3 style="margin-top:28px">KPI de negocio</h3>
+        <p class="texto-suave" style="margin-top:-6px">Escribe los datos de marketing del periodo (visitantes de Analytics y tu inversión en publicidad) para calcular conversión, CAC y LTV. Si dejas el margen vacío se usa 100 %.</p>
+        <div class="grid grid-4" style="margin-bottom:14px">
+          <div class="campo"><label for="kpi-periodo">Periodo</label><select id="kpi-periodo"><option value="30">Últimos 30 días</option><option value="90">Últimos 90 días</option><option value="0">Todo el historial</option></select></div>
+          <div class="campo"><label for="kpi-visitas">Visitantes en el periodo (Analytics)</label><input id="kpi-visitas" type="number" min="0" placeholder="Ej.: 500"></div>
+          <div class="campo"><label for="kpi-gasto">Inversión en marketing (COP)</label><input id="kpi-gasto" type="number" min="0" placeholder="Ej.: 400000"></div>
+          <div class="campo"><label for="kpi-margen">Margen bruto (%)</label><input id="kpi-margen" type="number" min="1" max="100" placeholder="Ej.: 80"></div>
+        </div>
+        <div class="kpis" id="kpi-negocio"></div>
+        <p class="texto-suave" style="font-size:.85rem;margin-top:10px">Conversión = compras ÷ visitantes · CAC = inversión ÷ clientes nuevos · LTV = ticket promedio × compras por cliente × margen · Se considera sano un LTV ÷ CAC de 3 o más.</p>
         <h3 style="margin-top:28px">Por curso</h3>
         <div class="tabla-scroll"><table class="tabla"><thead><tr><th>Curso</th><th>Inscritos</th><th>Ventas</th><th>Costos</th><th>Margen</th><th>Avance promedio</th></tr></thead><tbody>${filas.join("") || '<tr><td colspan="6">Sin cursos</td></tr>'}</tbody></table></div>
         <h3 style="margin-top:28px">Embudo</h3>
         <div class="tabla-scroll"><table class="tabla"><thead><tr><th>Etapa</th><th>Contactos</th></tr></thead><tbody>
           ${["nuevo", "contactado", "interesado", "cliente", "perdido"].map(e => `<tr><td style="text-transform:capitalize">${e}</td><td>${leads.filter(l => l.stage === e).length}</td></tr>`).join("")}
         </tbody></table></div>`;
+
+      // ----- KPI de negocio: conversión de visitas, CAC y LTV -----
+      const fechaPago = (p) => { const v = p.date || p.createdAt; if (!v) return new Date(0); return v.toDate ? v.toDate() : new Date(v); };
+      const clavesKpi = ["#kpi-periodo", "#kpi-visitas", "#kpi-gasto", "#kpi-margen"];
+      try { const g = JSON.parse(localStorage.getItem("kpi-negocio") || "{}"); clavesKpi.forEach(k => { if (g[k] !== undefined) $(k).value = g[k]; }); } catch (e) { /* sin datos guardados */ }
+      const num = (n, d = 1) => n.toLocaleString("es-CO", { maximumFractionDigits: d });
+      const tarjetaKpi = (valor, nombre) => `<div class="kpi"><div class="valor">${valor}</div><div class="nombre">${nombre}</div></div>`;
+      function pintarKpiNegocio() {
+        try { localStorage.setItem("kpi-negocio", JSON.stringify(Object.fromEntries(clavesKpi.map(k => [k, $(k).value])))); } catch (e) { /* no es grave */ }
+        const dias = Number($("#kpi-periodo").value);
+        const desde = dias ? new Date(Date.now() - dias * 864e5) : null;
+        const enPeriodo = (d) => !desde || d >= desde;
+        const visitas = Number($("#kpi-visitas").value) || 0;
+        const gasto = Number($("#kpi-gasto").value) || 0;
+        const margen = (Number($("#kpi-margen").value) || 100) / 100;
+        const pagosFecha = aprobados.map(p => ({ ...p, _d: fechaPago(p) }));
+        const pagosPeriodo = pagosFecha.filter(p => enPeriodo(p._d));
+        // Cliente nuevo = su primer pago aprobado cae dentro del periodo
+        const primero = {};
+        pagosFecha.forEach(p => { if (!primero[p.userId] || p._d < primero[p.userId]) primero[p.userId] = p._d; });
+        const nuevos = Object.values(primero).filter(enPeriodo).length;
+        const conversionVisitas = visitas ? pagosPeriodo.length / visitas * 100 : null;
+        const cac = nuevos ? gasto / nuevos : null;
+        // LTV con todo el historial de compras
+        const clientesUnicos = new Set(aprobados.map(p => p.userId)).size;
+        const ticket = aprobados.length ? ingresos / aprobados.length : 0;
+        const comprasPorCliente = clientesUnicos ? aprobados.length / clientesUnicos : 0;
+        const ltv = ticket * comprasPorCliente * margen;
+        const razon = cac ? ltv / cac : null;
+        $("#kpi-negocio").innerHTML =
+          tarjetaKpi(conversionVisitas === null ? "—" : num(conversionVisitas) + " %", `Conversión visitas → compra (${pagosPeriodo.length} compras)`) +
+          tarjetaKpi(cac === null ? "—" : formatoCOP(cac), `CAC (${nuevos} clientes nuevos)`) +
+          tarjetaKpi(clientesUnicos ? formatoCOP(ltv) : "—", `LTV (${clientesUnicos} clientes)`) +
+          tarjetaKpi(razon === null ? "—" : `<span style="color:${razon >= 3 ? "var(--exito)" : "var(--error)"}">${num(razon)} : 1</span>`, "LTV ÷ CAC (meta: 3 o más)");
+      }
+      clavesKpi.forEach(k => $(k).addEventListener("input", pintarKpiNegocio));
+      pintarKpiNegocio();
     }
 
     /* ================= CURSOS (S3-02) ================= */

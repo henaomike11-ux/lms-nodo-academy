@@ -1,7 +1,7 @@
 /* Nodo Academy · pago.js — dos usos:
    1) pago.html?curso=ID        → crea el cobro en la pasarela (vía Apps Script) y redirige.
    2) pago.html?estado=exito|pendiente|rechazado&curso=ID → página de regreso desde la pasarela. */
-import { requerirSesion, $, escapar, formatoCOP, parametro } from "./app.js";
+import { requerirSesion, $, escapar, formatoCOP, parametro, evento } from "./app.js";
 import { obtenerCurso, crearPago, estaInscrito } from "./db.js";
 
 // Versión de los términos y condiciones que acepta el estudiante (cámbiala cuando actualices legales.html)
@@ -21,7 +21,14 @@ if (usuario) {
     if (transactionId && window.APPS_SCRIPT_URL) {
       try {
         const r = await fetch(window.APPS_SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ accion: "estadoPago", transactionId }) }).then(x => x.json());
-        if (r.estado === "APPROVED") estado = "exito";
+        if (r.estado === "APPROVED") {
+          estado = "exito";
+          // Evento de compra para Analytics (una sola vez por transacción)
+          if (!sessionStorage.getItem("ga-" + transactionId)) {
+            sessionStorage.setItem("ga-" + transactionId, "1");
+            evento("purchase", { transaction_id: transactionId, currency: "COP", value: curso?.price || 0, items: [{ item_id: courseId, item_name: curso?.title || courseId }] });
+          }
+        }
         else if (r.estado === "DECLINED" || r.estado === "ERROR" || r.estado === "VOIDED") estado = "rechazado";
       } catch (e) { console.warn("No se pudo consultar el estado del pago", e); }
     }
@@ -75,6 +82,7 @@ if (usuario) {
     $("#acepta-terminos").addEventListener("change", (ev) => { $("#btn-pagar").disabled = !ev.currentTarget.checked; });
     $("#btn-pagar").addEventListener("click", async (ev) => {
       if (!$("#acepta-terminos").checked) { $("#mensaje").innerHTML = '<div class="mensaje mensaje-error">Debes aceptar los términos y condiciones para continuar.</div>'; return; }
+      evento("begin_checkout", { currency: "COP", value: curso.price, items: [{ item_id: curso.id, item_name: curso.title }] });
       const b = ev.currentTarget; b.disabled = true; b.textContent = "Creando el cobro…";
       try { const r = await crearPago(usuario.uid, curso.id, usuario.email, { termsVersion: TERMS_VERSION, accessConsent: true }); location.href = r.url; }
       catch (e) { console.error(e); $("#mensaje").innerHTML = `<div class="mensaje mensaje-error">${escapar(e.message)}</div>`; b.disabled = false; b.textContent = "Ir a pagar"; }

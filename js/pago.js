@@ -4,6 +4,9 @@
 import { requerirSesion, $, escapar, formatoCOP, parametro } from "./app.js";
 import { obtenerCurso, crearPago, estaInscrito } from "./db.js";
 
+// Versión de los términos y condiciones que acepta el estudiante (cámbiala cuando actualices legales.html)
+const TERMS_VERSION = "1.0";
+
 const usuario = await requerirSesion();
 if (usuario) {
   const cont = $("#pago");
@@ -62,12 +65,18 @@ if (usuario) {
         <p><strong>${escapar(curso.title)}</strong></p>
         <div class="precio" style="font-size:2rem">${formatoCOP(curso.price)}</div>
         <p class="texto-suave">Te llevaremos a la pasarela de pago segura. Al aprobarse el pago, el curso se activa automáticamente en tu cuenta (${escapar(usuario.email)}).</p>
-        <button class="btn btn-primario btn-bloque" id="btn-pagar">Ir a pagar</button>
+        <label class="campo-check" style="margin:16px 0 12px">
+          <input type="checkbox" id="acepta-terminos">
+          <span>Acepto los <a href="legales.html#terminos" target="_blank">términos y condiciones</a> y la <a href="legales.html#reembolso" target="_blank">política de reembolso</a>, y autorizo que el acceso al curso comience de inmediato cuando se apruebe el pago.</span>
+        </label>
+        <button class="btn btn-primario btn-bloque" id="btn-pagar" disabled>Ir a pagar</button>
         <div id="mensaje" style="margin-top:12px"></div>
       </div>`;
+    $("#acepta-terminos").addEventListener("change", (ev) => { $("#btn-pagar").disabled = !ev.currentTarget.checked; });
     $("#btn-pagar").addEventListener("click", async (ev) => {
+      if (!$("#acepta-terminos").checked) { $("#mensaje").innerHTML = '<div class="mensaje mensaje-error">Debes aceptar los términos y condiciones para continuar.</div>'; return; }
       const b = ev.currentTarget; b.disabled = true; b.textContent = "Creando el cobro…";
-      try { const r = await crearPago(usuario.uid, curso.id, usuario.email); location.href = r.url; }
+      try { const r = await crearPago(usuario.uid, curso.id, usuario.email, { termsVersion: TERMS_VERSION, accessConsent: true }); location.href = r.url; }
       catch (e) { console.error(e); $("#mensaje").innerHTML = `<div class="mensaje mensaje-error">${escapar(e.message)}</div>`; b.disabled = false; b.textContent = "Ir a pagar"; }
     });
   }

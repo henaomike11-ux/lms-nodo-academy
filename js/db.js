@@ -8,7 +8,7 @@
 
    Colecciones (sección 8 de la guía):
    users, courses, lessons, enrollments, progress, payments,
-   leads, interactions, instructors, resources
+   leads, interactions, instructors, resources, acceptances
    ============================================================ */
 
 const CFG = window.FIREBASE_CONFIG || {};
@@ -313,11 +313,27 @@ export async function eliminarSesion(id) {
 /* ============================================================
    PAGOS: crear el cobro en la pasarela a través de Apps Script
    ============================================================ */
-export async function crearPago(uid, courseId, correo) {
+/** Guarda la evidencia de que el estudiante aceptó los términos antes de pagar (Ley 527 de 1999).
+ *  La hora la pone el servidor y el registro no se puede editar ni borrar desde el navegador. */
+async function registrarAceptacion(uid, courseId, { termsVersion, accessConsent }) {
+  const { db, F } = await firebase();
+  const ref = await F.addDoc(F.collection(db, "acceptances"), {
+    userId: uid, courseId, termsVersion: String(termsVersion), accessConsent: Boolean(accessConsent), acceptedAt: F.serverTimestamp()
+  });
+  return ref.id;
+}
+
+export async function crearPago(uid, courseId, correo, aceptacion) {
   if (!window.APPS_SCRIPT_URL) throw new Error("El backend de pagos aún no está configurado (APPS_SCRIPT_URL vacío).");
+  // Sin evidencia de la aceptación no se crea el cobro
+  let aceptacionId = null;
+  if (usaFirebase && aceptacion) {
+    try { aceptacionId = await registrarAceptacion(uid, courseId, aceptacion); }
+    catch (e) { console.error(e); throw new Error("No se pudo registrar la aceptación de los términos. Intenta de nuevo."); }
+  }
   const resp = await fetch(window.APPS_SCRIPT_URL, {
     method: "POST", headers: { "Content-Type": "text/plain" },
-    body: JSON.stringify({ accion: "crearPago", userId: uid, courseId, email: correo, origen: location.origin + location.pathname.replace(/[^/]*$/, "") })
+    body: JSON.stringify({ accion: "crearPago", userId: uid, courseId, email: correo, aceptacionId, origen: location.origin + location.pathname.replace(/[^/]*$/, "") })
   });
   const datos = await resp.json();
   if (!datos.ok) throw new Error(datos.error || "No se pudo crear el pago");

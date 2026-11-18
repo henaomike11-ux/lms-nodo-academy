@@ -19,6 +19,26 @@ export const MARCA = {
 /* Isotipo del logo: una N formada por líneas y nodos (red conectada) */
 const LOGO_N = '<svg width="26" height="26" viewBox="8 8 48 48" aria-hidden="true"><path d="M18 47V17L46 47V17" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><g fill="#fff"><circle cx="18" cy="47" r="6.5"/><circle cx="18" cy="17" r="6.5"/><circle cx="46" cy="47" r="6.5"/><circle cx="46" cy="17" r="6.5"/></g></svg>';
 
+/* ---------- Google Analytics 4 ----------
+   Pega aquí tu ID de medición (formato G-XXXXXXXXXX). Mientras esté vacío, no se carga nada. */
+const GA_ID = "";
+
+function iniciarAnalytics() {
+  if (!GA_ID || window.gtag) return;
+  const s = document.createElement("script");
+  s.async = true; s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+  document.head.appendChild(s);
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function () { window.dataLayer.push(arguments); };
+  window.gtag("js", new Date());
+  window.gtag("config", GA_ID);
+}
+
+/** Envía un evento a Google Analytics (si está activado). Ej.: evento("generate_lead") */
+export function evento(nombre, params = {}) {
+  if (window.gtag) window.gtag("event", nombre, params);
+}
+
 /* ---------- Utilidades ---------- */
 export const $ = (sel, raiz = document) => raiz.querySelector(sel);
 export const $$ = (sel, raiz = document) => [...raiz.querySelectorAll(sel)];
@@ -117,6 +137,7 @@ export function renderFooter() {
 /* ---------- Arranque común ----------
    Devuelve una promesa con el usuario actual (o null) y pinta header/footer. */
 export function iniciarPagina() {
+  iniciarAnalytics();
   renderFooter();
   return new Promise(resolver => {
     onUser(usuario => { renderHeader(usuario); resolver(usuario); });

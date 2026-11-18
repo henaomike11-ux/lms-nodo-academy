@@ -1,5 +1,5 @@
 /* Nodo Academy · inicio.js — landing page: cursos destacados, FAQ y formulario de interés (CRM) */
-import { iniciarPagina, $, $$, escapar, formatoCOP, toast } from "./app.js";
+import { iniciarPagina, $, $$, escapar, formatoCOP, toast, evento } from "./app.js";
 import { obtenerCursos, crearLead } from "./db.js";
 import { tarjetaCurso } from "./cursos-ui.js";
 
@@ -34,6 +34,7 @@ form.addEventListener("submit", async (ev) => {
   const boton = $("button[type=submit]", form); boton.disabled = true; boton.textContent = "Enviando…";
   try {
     await crearLead({ ...datos, name: datos.name.trim(), consent: true, source: "formulario-web", userId: usuario?.uid || null });
+    evento("generate_lead", { source: "formulario-web" });
     form.reset();
     $("#lead-mensaje").innerHTML = '<div class="mensaje mensaje-exito">¡Listo! Te escribiremos pronto con la información de los cursos.</div>';
     toast("Datos enviados");

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certificado · Nodo Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <style>
+    .cert-envoltorio { max-width: 1000px; margin: 0 auto; }
+    .cert { box-sizing: border-box; container-type: inline-size; position: relative; width: 100%; aspect-ratio: 297 / 210; background: #fff; border: 1px solid var(--borde, #E3E6F0); border-radius: 14px; box-shadow: 0 6px 24px rgba(30, 34, 51, 0.08); overflow: hidden; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 5cqw 8cqw 3cqw; color: var(--texto, #1E2233); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .cert::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1.6cqw; background: linear-gradient(90deg, #3B4CCA, #18C3B0); }
+    .cert::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1.6cqw; background: linear-gradient(90deg, #18C3B0, #3B4CCA); }
+    .cert-logo { display: flex; align-items: center; gap: 1.2cqw; font-family: var(--fuente-titulos, "Poppins", sans-serif); font-weight: 700; font-size: 3.1cqw; }
+    .cert-logo svg { width: 5.6cqw; height: 5.6cqw; }
+    .cert-etiqueta { margin: 4.6cqw 0 0; font-family: var(--fuente-titulos, "Poppins", sans-serif); font-weight: 600; font-size: 1.7cqw; letter-spacing: .35em; text-transform: uppercase; color: #3B4CCA; }
+    .cert-texto { margin: 2.6cqw 0 0; font-size: 1.9cqw; color: var(--texto-suave, #5B6075); }
+    .cert-nombre { margin: .8cqw 0 0; font-family: var(--fuente-titulos, "Poppins", sans-serif); font-weight: 700; font-size: 6.2cqw; line-height: 1.15; color: #3B4CCA; }
+    .cert-curso { margin: 1cqw 0 0; font-family: var(--fuente-titulos, "Poppins", sans-serif); font-weight: 700; font-size: 3.6cqw; line-height: 1.2; }
+    .cert-fecha { margin: 3cqw 0 0; font-size: 1.8cqw; color: var(--texto-suave, #5B6075); }
+    .cert-firmas { margin-top: auto; width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 3cqw; }
+    .cert-firma { border-top: 1px solid #1E2233; padding-top: .7cqw; font-family: var(--fuente-titulos, "Poppins", sans-serif); font-weight: 600; font-size: 1.4cqw; }
+    .cert-firma span { display: block; font-family: var(--fuente-texto, "Inter", sans-serif); font-weight: 400; font-size: 1.15cqw; color: var(--texto-suave, #5B6075); }
+    .cert-pie { margin: 1.6cqw 0 1.4cqw; font-size: 1.1cqw; color: var(--texto-suave, #5B6075); }
+    .cert-pie strong { color: #3B4CCA; font-family: var(--fuente-titulos, "Poppins", sans-serif); }
+    .cert-acciones { display: flex; gap: 12px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+    @page { size: A4 landscape; margin: 0; }
+    @media print {
+      #header, #footer, .no-imprimir, .banner-demo { display: none !important; }
+      body, .seccion { background: #fff !important; padding: 0 !important; margin: 0 !important; }
+      .cert-envoltorio { max-width: none; }
+      .cert { width: 297mm; height: 210mm; border: none; border-radius: 0; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="header"></div>
+  <section class="seccion">
+    <div class="contenedor cert-envoltorio" id="certificado"><div class="cargando">Preparando tu certificado…</div></div>
+  </section>
+  <div id="footer"></div>
+  <script src="js/datos.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script type="module" src="js/certificado.js"></script>
+</body>
+</html>

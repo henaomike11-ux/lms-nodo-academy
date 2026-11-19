@@ -91,6 +91,20 @@ function borrarCookiesAnalytics() {
   });
 }
 
+const ESTILO_COOKIES = `
+#aviso-cookies { position: fixed; left: 0; right: 0; bottom: 0; z-index: 90; background: rgba(255, 255, 255, .97); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border-top: 1px solid var(--borde, #E3E6F0); box-shadow: 0 -8px 28px rgba(30, 34, 51, .10); padding: 22px 0 calc(18px + env(safe-area-inset-bottom, 0px)); animation: cookies-sube .35s ease both; }
+#aviso-cookies::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: linear-gradient(90deg, var(--primario, #3B4CCA), var(--secundario, #18C3B0)); }
+#aviso-cookies .cookies-cuerpo { display: flex; flex-wrap: wrap; gap: 14px 20px; align-items: center; width: min(100% - 32px, var(--ancho-max, 1120px)); margin-inline: auto; }
+#aviso-cookies .cookies-icono { flex: none; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: rgba(59, 76, 202, .1); }
+#aviso-cookies .cookies-texto { flex: 1 1 240px; min-width: 0; }
+#aviso-cookies h2 { font-size: 1.05rem; margin: 0 0 4px; }
+#aviso-cookies p { margin: 0; font-size: .9rem; color: var(--texto-suave, #5B6075); }
+#aviso-cookies .cookies-acciones { display: flex; gap: 10px; flex: none; }
+@media (max-width: 639px) { #aviso-cookies .cookies-acciones { flex: 1 1 100%; } #aviso-cookies .cookies-acciones .btn { flex: 1; } }
+@keyframes cookies-sube { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { #aviso-cookies { animation: none; } }
+`;
+
 export function avisoCookies(forzar = false) {
   const estado = leerCookies();
   if (estado === "si") iniciarAnalytics();
@@ -99,10 +113,20 @@ export function avisoCookies(forzar = false) {
   caja.id = "aviso-cookies";
   caja.setAttribute("role", "dialog");
   caja.setAttribute("aria-label", "Aviso de cookies");
-  caja.style.cssText = "position:fixed;left:16px;right:16px;bottom:16px;z-index:90;max-width:640px;margin-inline:auto;background:#fff;border:1px solid var(--borde);border-radius:14px;box-shadow:var(--sombra);padding:16px 18px";
+  if (!$("#estilo-cookies")) {
+    const st = document.createElement("style");
+    st.id = "estilo-cookies"; st.textContent = ESTILO_COOKIES;
+    document.head.appendChild(st);
+  }
   caja.innerHTML = `
-    <p style="margin:0 0 12px;font-size:.92rem">Usamos cookies de Google Analytics para medir cómo se usa el sitio y mejorarlo. Solo se activan si las aceptas. Más información en la <a href="legales.html#cookies">política de cookies</a>.</p>
-    <div class="fila-acciones"><button class="btn btn-primario btn-pequeno" id="cookies-si">Aceptar</button><button class="btn btn-contorno btn-pequeno" id="cookies-no">Rechazar</button></div>`;
+    <div class="cookies-cuerpo">
+      <div class="cookies-icono"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3B4CCA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/><path d="M11 17v.01"/><path d="M7 14v.01"/></svg></div>
+      <div class="cookies-texto">
+        <h2>Tú decides sobre las cookies</h2>
+        <p>Usamos cookies de Google Analytics para medir cómo se usa el sitio y mejorarlo. Solo se activan si las aceptas. Más información en la <a href="legales.html#cookies">política de cookies</a>.</p>
+      </div>
+      <div class="cookies-acciones"><button class="btn btn-contorno btn-pequeno" id="cookies-no">Rechazar</button><button class="btn btn-primario btn-pequeno" id="cookies-si">Aceptar</button></div>
+    </div>`;
   document.body.appendChild(caja);
   $("#cookies-si").addEventListener("click", () => {
     guardarCookies("si");

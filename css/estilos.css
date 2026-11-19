@@ -251,3 +251,16 @@ img { max-width: 100%; display: block; }
 .cargando { color: var(--texto-suave); padding: 24px; text-align: center; }
 .vacio { background: var(--blanco); border: 1px dashed var(--borde); border-radius: var(--radio); padding: 32px; text-align: center; color: var(--texto-suave); }
 .banner-demo { background: rgba(255,200,61,.25); color: #6b4f00; text-align: center; font-size: .85rem; padding: 8px 12px; }
+/* ---------- Mejoras de marca y accesibilidad ---------- */
+.error { color: var(--error); font-size: .85rem; }
+input[type="checkbox"], input[type="radio"] { accent-color: var(--primario); }
+:focus-visible { outline: 3px solid rgba(59,76,202,.5); outline-offset: 2px; }
+.btn-primario[disabled]:hover { background: var(--primario); box-shadow: none; }
+.estado .campo-check { text-align: left; }
+.kpi .valor { font-size: clamp(1.25rem, 4.5vw, 1.7rem); overflow-wrap: anywhere; }
+::selection { background: rgba(59,76,202,.2); }
+@supports (-webkit-backdrop-filter: none) { .header { -webkit-backdrop-filter: blur(8px); } }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}

@@ -21,7 +21,7 @@ const LOGO_N = '<svg width="26" height="26" viewBox="8 8 48 48" aria-hidden="tru
 
 /* ---------- Google Analytics 4 ----------
    Pega aquí tu ID de medición (formato G-XXXXXXXXXX). Mientras esté vacío, no se carga nada. */
-const GA_ID = "";
+const GA_ID = "G-SC2P4Z1WP7";
 
 function iniciarAnalytics() {
   if (!GA_ID || window.gtag) return;
@@ -37,6 +37,15 @@ function iniciarAnalytics() {
 /** Envía un evento a Google Analytics (si está activado). Ej.: evento("generate_lead") */
 export function evento(nombre, params = {}) {
   if (window.gtag) window.gtag("event", nombre, params);
+}
+
+/* Fuerza al navegador a pedir el favicon actualizado (sube este número cuando cambies img/favicon.svg) */
+const FAVICON_V = "2";
+function actualizarFavicon() {
+  document.querySelectorAll('link[rel="icon"]').forEach(l => {
+    const base = (l.getAttribute("href") || "").split("?")[0];
+    if (base) l.setAttribute("href", `${base}?v=${FAVICON_V}`);
+  });
 }
 
 /* ---------- Utilidades ---------- */
@@ -137,6 +146,7 @@ export function renderFooter() {
 /* ---------- Arranque común ----------
    Devuelve una promesa con el usuario actual (o null) y pinta header/footer. */
 export function iniciarPagina() {
+  actualizarFavicon();
   iniciarAnalytics();
   renderFooter();
   return new Promise(resolver => {

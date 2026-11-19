@@ -25,6 +25,7 @@ if (usuario) {
             <div class="fila-acciones" style="margin-top:16px">
               ${siguiente ? `<a class="btn btn-primario btn-pequeno" href="leccion.html?curso=${encodeURIComponent(curso.id)}&leccion=${encodeURIComponent(siguiente.id)}">${pct === 100 ? "Repasar" : hechas ? "Continuar" : "Empezar"}</a>` : ""}
               <a class="btn btn-contorno btn-pequeno" href="curso.html?id=${encodeURIComponent(curso.id)}">Ver temario</a>
+              ${pct === 100 ? `<a class="btn btn-secundario btn-pequeno" href="certificado.html?curso=${encodeURIComponent(curso.id)}">Ver certificado</a>` : ""}
               ${pct === 100 ? '<span class="chip chip-acento" style="align-self:center">🎓 Curso completado</span>' : ""}
             </div>
           </article>`;

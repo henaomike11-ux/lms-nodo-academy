@@ -78,6 +78,44 @@ export function toast(mensaje, ms = 2600) {
   clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("visible"), ms);
 }
 
+/* ---------- Aviso de cookies ----------
+   En Colombia no hay una ley específica de cookies, pero si recogen datos personales aplica la Ley 1581 de 2012
+   (autorización previa, expresa e informada). Por eso Google Analytics solo se carga si la persona pulsa «Aceptar». */
+const CLAVE_COOKIES = "cookies-nodo";
+function leerCookies() { try { return localStorage.getItem(CLAVE_COOKIES); } catch (e) { return null; } }
+function guardarCookies(valor) { try { localStorage.setItem(CLAVE_COOKIES, valor); } catch (e) { /* no es grave */ } }
+function borrarCookiesAnalytics() {
+  document.cookie.split(";").map(c => c.split("=")[0].trim()).filter(n => n === "_ga" || n.startsWith("_ga_")).forEach(n => {
+    document.cookie = `${n}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+    document.cookie = `${n}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${location.hostname}`;
+  });
+}
+
+export function avisoCookies(forzar = false) {
+  const estado = leerCookies();
+  if (estado === "si") iniciarAnalytics();
+  if ((estado && !forzar) || $("#aviso-cookies")) return;
+  const caja = document.createElement("div");
+  caja.id = "aviso-cookies";
+  caja.setAttribute("role", "dialog");
+  caja.setAttribute("aria-label", "Aviso de cookies");
+  caja.style.cssText = "position:fixed;left:16px;right:16px;bottom:16px;z-index:90;max-width:640px;margin-inline:auto;background:#fff;border:1px solid var(--borde);border-radius:14px;box-shadow:var(--sombra);padding:16px 18px";
+  caja.innerHTML = `
+    <p style="margin:0 0 12px;font-size:.92rem">Usamos cookies de Google Analytics para medir cómo se usa el sitio y mejorarlo. Solo se activan si las aceptas. Más información en la <a href="legales.html#cookies">política de cookies</a>.</p>
+    <div class="fila-acciones"><button class="btn btn-primario btn-pequeno" id="cookies-si">Aceptar</button><button class="btn btn-contorno btn-pequeno" id="cookies-no">Rechazar</button></div>`;
+  document.body.appendChild(caja);
+  $("#cookies-si").addEventListener("click", () => {
+    guardarCookies("si");
+    if (GA_ID) window["ga-disable-" + GA_ID] = false;
+    iniciarAnalytics(); caja.remove();
+  });
+  $("#cookies-no").addEventListener("click", () => {
+    guardarCookies("no");
+    if (GA_ID) window["ga-disable-" + GA_ID] = true;
+    borrarCookiesAnalytics(); caja.remove();
+  });
+}
+
 /* ---------- Header y footer ---------- */
 export function renderHeader(usuario) {
   const cont = $("#header");
@@ -137,17 +175,20 @@ export function renderFooter() {
           <a href="legales.html#datos">Tratamiento de datos personales</a>
           <a href="legales.html#terminos">Términos y condiciones</a>
           <a href="legales.html#reembolso">Política de reembolso</a>
+          <a href="legales.html#cookies">Política de cookies</a>
+          <a href="#" id="cookies-config">Preferencias de cookies</a>
         </div>
       </div>
       <div class="contenedor legal">© ${new Date().getFullYear()} ${MARCA.nombre} · Proyecto académico E-Business · Hecho en ${MARCA.ciudad}</div>
     </footer>`;
+  $("#cookies-config")?.addEventListener("click", (e) => { e.preventDefault(); avisoCookies(true); });
 }
 
 /* ---------- Arranque común ----------
    Devuelve una promesa con el usuario actual (o null) y pinta header/footer. */
 export function iniciarPagina() {
   actualizarFavicon();
-  iniciarAnalytics();
+  avisoCookies();
   renderFooter();
   return new Promise(resolver => {
     onUser(usuario => { renderHeader(usuario); resolver(usuario); });

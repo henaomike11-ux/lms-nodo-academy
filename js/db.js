@@ -252,6 +252,15 @@ export async function obtenerTodoProgreso() {
   const snap = await F.getDocs(F.collection(db, "progress"));
   return snap.docs.map(d => d.data());
 }
+/** Fecha en que el estudiante completó su última lección del curso (se usa en el certificado). */
+export async function fechaFinalizacion(uid, courseId) {
+  if (!usaFirebase) return null;
+  const { db, F } = await firebase();
+  const snap = await F.getDocs(F.query(F.collection(db, "progress"), F.where("userId", "==", uid), F.where("courseId", "==", courseId)));
+  let max = null;
+  snap.docs.forEach(d => { const t = d.data().completedAt; const f = t && t.toDate ? t.toDate() : null; if (f && (!max || f > max)) max = f; });
+  return max;
+}
 export async function obtenerPagos() {
   const { db, F } = await firebase();
   const snap = await F.getDocs(F.collection(db, "payments"));
